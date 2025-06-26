@@ -1,0 +1,12 @@
+body,
+html,
+#root {
+    height: 100%;
+    margin: 0;
+    background-color: rgb(91, 89, 92);
+    color: white; /* optional for contrast */
+}
+
+.theme-color {
+    background-color: rgb(91, 89, 92);
+}

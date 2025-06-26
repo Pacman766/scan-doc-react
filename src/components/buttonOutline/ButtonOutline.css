@@ -1,0 +1,22 @@
+.button-outline {
+    border: none!important;
+    background-color: transparent!important;
+    border-radius: 50% !important;
+    padding: 0.5rem;
+    display: flex;
+    width: 40px;           /* Ensure square shape */
+    height: 40px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.button-outline:hover {
+    background-color: #6c757d!important; /* light gray or any color */
+}
+
+.button-outline .icon {
+    color: #6c757d; /* icon color */
+    font-size: 1.2rem;
+}

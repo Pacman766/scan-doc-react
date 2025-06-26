@@ -1,0 +1,16 @@
+html, body, #root, .App {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* Prevent body scroll, let ScanPanel manage its own */
+}
+
+.dark-mode {
+    background-color: #343a40; /* Example dark background */
+    color: #f8f9fa; /* Example light text */
+}
+
+/* Adjust the main window scroll container height */
+.main-window-scroll-container {
+    height: calc(100vh - 56px); /* Assuming Navbar height is approx 56px */
+    /* You might need to adjust this based on your actual Navbar height */
+}
