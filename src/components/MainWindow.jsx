@@ -2,7 +2,18 @@
 import React from 'react';
 import ScannedPages from "./ScannedPages";
 
-const MainWindow = React.forwardRef(({ files, activePage, scrollToPage, setMainImageRef, rotationMap, mainWindowWidth, mainWindowHeight, fitMode, scale }, mainScrollContainerRef) => {
+const MainWindow = React.forwardRef(({
+                                         files,
+                                         activePage,
+                                         scrollToPage,
+                                         setMainImageRef,
+                                         rotationMap,
+                                         mainWindowWidth,
+                                         mainWindowHeight,
+                                         fitMode,
+                                         scale,
+                                         showSidebar
+                                     }, mainScrollContainerRef) => {
     return (
         <div
             ref={mainScrollContainerRef}
@@ -16,7 +27,9 @@ const MainWindow = React.forwardRef(({ files, activePage, scrollToPage, setMainI
                 flexDirection: 'column', // Allow vertical stacking of pages
                 alignItems: 'center', // Center pages horizontally
                 paddingTop: '60px', // Offset for fixed Navbar
-                paddingBottom: '20px' // Some bottom padding
+                paddingBottom: '20px', // Some bottom padding
+                transform: showSidebar ? 'translateX(125px)' : 'translateX(0px)',
+                transition: 'transform 0.3s ease-in-out'
             }}
             className="main-window-scroll-container"
         >

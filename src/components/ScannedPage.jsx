@@ -36,7 +36,7 @@ const ScannedPage = forwardRef(
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'end',
             cursor: onClick ? 'pointer' : 'default',
             scrollSnapAlign: 'start',
             scrollMarginTop: '60px',
@@ -57,9 +57,10 @@ const ScannedPage = forwardRef(
                 calculatedImageHeight = `${mainWindowHeight - viewportPadding}px`;
                 calculatedImageWidth = 'auto';
             } else if (fitMode === 'width') {
-                calculatedImageWidth = `${mainWindowWidth - viewportHorizontalPadding}px`;
+                calculatedImageWidth = `${mainWindowWidth - viewportHorizontalPadding-300}px`;
                 calculatedImageHeight = 'auto';
-            } else { // fitMode === 'manual'
+            }
+            else { // fitMode === 'manual'
                 calculatedImageWidth = `${scale}%`; // Use scale for manual zoom
                 calculatedImageHeight = 'auto'; // Maintain aspect ratio
                 // You could also apply scale to height:

@@ -13,8 +13,7 @@ import { BsPlusLg } from 'react-icons/bs';
 import { MdOutlineRotate90DegreesCcw } from 'react-icons/md';
 import { CiPlay1 } from 'react-icons/ci';
 import { IoSaveOutline, IoSettingsOutline } from 'react-icons/io5';
-import { LuStretchHorizontal } from 'react-icons/lu';
-import {AiOutlineColumnWidth, AiOutlineColumnHeight} from "react-icons/ai"; // Added LuStretchHorizontal for manual/auto
+import {AiOutlineColumnWidth, AiOutlineColumnHeight} from "react-icons/ai";
 
 const Navigation = ({
                         toggleSidebar,
@@ -73,16 +72,15 @@ const Navigation = ({
     );
 
     const getFitModeIcon = () => {
-        if (fitMode === 'height') return <AiOutlineColumnHeight color="#AFB2B6" />;
-        if (fitMode === 'width') return <AiOutlineColumnWidth color="#AFB2B6" />;
-        return <LuStretchHorizontal color="#AFB2B6" />; // Icon for 'manual' or default
+        if (fitMode === 'height') return <AiOutlineColumnWidth color="#AFB2B6" />;
+        if (fitMode === 'width') return <AiOutlineColumnHeight color="#AFB2B6" />;
     };
-
-    const getFitModeTooltip = () => {
-        if (fitMode === 'height') return "Fit to Height";
-        if (fitMode === 'width') return "Fit to Width";
-        return "Manual Zoom"; // Tooltip for 'manual' or default
-    };
+    //
+    // const getFitModeTooltip = () => {
+    //     if (fitMode === 'height') return "Fit to Height";
+    //     if (fitMode === 'width') return "Fit to Width";
+    //     return "Manual Zoom"; // Tooltip for 'manual' or default
+    // };
 
     return (
         <Navbar
@@ -138,11 +136,11 @@ const Navigation = ({
                     <VerticalSeparator />
                     <div className="d-flex align-items-center">
                         <ButtonOutline
-                            isDisabled={totalPages === 0 || fitMode !== 'manual'} // Disable if not in manual mode
+                            isDisabled={totalPages === 0} // Disable if not in manual mode
                             icon={<HiMinus color="#AFB2B6" />}
                             onClick={() => setScale(prev => Math.max(10, prev - 10))} />
                         <input
-                            disabled={totalPages === 0 || fitMode !== 'manual'} // Disable if not in manual mode
+                            disabled={totalPages === 0} // Disable if not in manual mode
                             type="text"
                             value={scale + '%'}
                             onChange={(e) => setScale(e.target.value.replace(/\D/, ''))}
@@ -161,7 +159,7 @@ const Navigation = ({
                         />
                         <ButtonOutline
                             icon={<BsPlusLg color="#AFB2B6" />}
-                            isDisabled={totalPages === 0 || fitMode !== 'manual'} // Disable if not in manual mode
+                            isDisabled={totalPages === 0}
                             onClick={() => setScale(prev => Math.min(400, prev + 10))} // Max scale 400%
                         />
                     </div>
@@ -170,7 +168,7 @@ const Navigation = ({
                     {/* Toggle button for fit mode */}
                     <ButtonOutline
                         icon={getFitModeIcon()}
-                        tooltip={getFitModeTooltip()}
+                        // tooltip={getFitModeTooltip()}
                         isDisabled={totalPages === 0}
                         onClick={handleFitMode}
                     />
@@ -182,11 +180,21 @@ const Navigation = ({
                 </div>
 
                 <div className="d-flex align-items-center">
-                    <ButtonDefault icon={<CiPlay1 color="#AFB2B6" />} text={"Сканировать"} onClick={onScan} />
-                    <ButtonDefault icon={<IoSaveOutline color="#AFB2B6" />} text={"Сохранить"}
-                                   isDisabled={totalPages === 0} />
-                    <ButtonDefault icon={<IoSettingsOutline color="#AFB2B6" />} tooltip={"Настройки"}
-                                   onClick={() => setSettingsShow(true)} />
+                    <ButtonDefault
+                        icon={<CiPlay1 color="#AFB2B6" />}
+                        text={"Сканировать"}
+                        onClick={onScan}
+                    />
+                    <ButtonDefault
+                        icon={<IoSaveOutline color="#AFB2B6" />}
+                        text={"Сохранить"}
+                        isDisabled={totalPages === 0}
+                    />
+                    <ButtonDefault
+                        icon={<IoSettingsOutline color="#AFB2B6" />}
+                        tooltip={"Настройки"}
+                        onClick={() => setSettingsShow(true)}
+                    />
                 </div>
             </Container>
             <SettingsDialog

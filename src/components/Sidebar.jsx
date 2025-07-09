@@ -39,7 +39,7 @@ const Sidebar = ({
                 placement="start"
                 data-bs-theme="dark"
                 className="z-1"
-                style={{ width: 300 }}
+                style={{ width: 250 }}
                 backdrop={false}
                 scroll={true}
             >

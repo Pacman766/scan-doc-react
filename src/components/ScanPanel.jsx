@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Navigation from "./Navigation";
 import Sidebar from "./Sidebar";
 import MainWindow from "./MainWindow";
-// import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 const ScanPanel = () => {
     const data = [
@@ -39,7 +38,9 @@ const ScanPanel = () => {
         }
     }, []);
 
-    const toggleSidebar = () => setShowSidebar(!showSidebar);
+    const toggleSidebar = () => {
+        setShowSidebar(!showSidebar);
+    };
 
     const handleScan = () => {
         setFiles(data);
@@ -151,8 +152,7 @@ const ScanPanel = () => {
     const toggleFitMode = useCallback(() => {
         setFitMode(prevMode => {
             if (prevMode === 'height') return 'width';
-            if (prevMode === 'width') return 'manual';
-            return 'height'; // Default back to height or 'manual'
+            if (prevMode === 'width') return 'height';
         });
     }, []);
 
@@ -196,6 +196,7 @@ const ScanPanel = () => {
                 mainWindowHeight={mainWindowHeight}
                 mainWindowWidth={mainWindowWidth}
                 scale={scale}
+                showSidebar={showSidebar}
             />
         </div>
     );
