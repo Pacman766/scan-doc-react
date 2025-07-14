@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Navigation from "./Navigation";
 import Sidebar from "./Sidebar";
 import MainWindow from "./MainWindow";
+import { useIntersectionObserver } from "../hooks/useIntersection"; // Import new hook
+
 
 const ScanPanel = () => {
     const data = [
@@ -12,9 +14,7 @@ const ScanPanel = () => {
     ];
 
     const [files, setFiles] = useState([]);
-    const [activePage, setActivePage] = useState(1);
     const [showSidebar, setShowSidebar] = useState(true);
-    const mainImageRefs = useRef({});
     const mainScrollContainerRef = useRef(null);
     const [rotationMap, setRotationMap] = useState({});
     const [scale, setScale] = useState(100);
@@ -22,6 +22,11 @@ const ScanPanel = () => {
     const [mainWindowHeight, setMainWindowHeight] = useState(0);
     const [mainWindowWidth, setMainWindowWidth] = useState(0);
 
+    // Use the new useIntersectionObserver hook
+    const { activePage, setActivePage, setObservedElementRef } = useIntersectionObserver(
+        mainScrollContainerRef,
+        1 // Initial active page
+    );
 
     /**
      * Обновление размера картинок в основном окне по кнопке "По размеру страницы"
@@ -53,62 +58,24 @@ const ScanPanel = () => {
         setScale(100);
     };
 
+    const localImageRefs = useRef({});
+
     const setMainImageRef = useCallback((pageNumber, el) => {
+        setObservedElementRef(pageNumber, el);
+
         if (el) {
-            mainImageRefs.current[pageNumber] = el;
+            localImageRefs.current[pageNumber] = el;
         } else {
-            delete mainImageRefs.current[pageNumber];
+            delete localImageRefs.current[pageNumber];
         }
-    }, []);
+    }, [setObservedElementRef]);
 
     const scrollToPage = useCallback((pageNumber) => {
-        const targetElement = mainImageRefs.current[pageNumber];
+        const targetElement = localImageRefs.current[pageNumber];
         if (targetElement) {
             targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, []);
-
-    const handleIntersection = useCallback((entries) => {
-        const intersectingEntries = entries
-            .filter(entry => entry.isIntersecting)
-            .sort((a, b) => {
-                const aRatio = a.intersectionRatio;
-                const bRatio = b.intersectionRatio;
-                if (aRatio === 1 && bRatio < 1) return -1;
-                if (bRatio === 1 && aRatio < 1) return 1;
-                return bRatio - aRatio;
-            });
-
-        if (intersectingEntries.length > 0) {
-            const mostVisiblePageId = intersectingEntries[0].target.dataset.page;
-            const pageNum = parseInt(mostVisiblePageId, 10);
-            if (pageNum !== activePage) {
-                setActivePage(pageNum);
-            }
-        }
-    }, [activePage]);
-
-    useEffect(() => {
-        if (!mainScrollContainerRef.current) return;
-        if (mainImageRefs && mainImageRefs.current && Object.keys(mainImageRefs.current).length > 0){
-           const observer = new IntersectionObserver(handleIntersection, {
-                root: mainScrollContainerRef.current,
-                rootMargin: '0px',
-                threshold: [0.1, 0.5, 0.9]
-            });
-
-            Object.values(mainImageRefs.current).forEach(node => {
-                if (node) observer.observe(node);
-            });
-
-            if (observer && observer.current){
-                return () => {
-                    observer.disconnect();
-                };
-            }
-        }
-
-    }, [files, activePage]);
 
     const handleDeletePage = useCallback(()  => {
         if (activePage < 1 || activePage > files.length){
