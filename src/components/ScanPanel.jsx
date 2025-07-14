@@ -90,27 +90,25 @@ const ScanPanel = () => {
 
     useEffect(() => {
         if (!mainScrollContainerRef.current) return;
+        if (mainImageRefs && mainImageRefs.current && Object.keys(mainImageRefs.current).length > 0){
+           const observer = new IntersectionObserver(handleIntersection, {
+                root: mainScrollContainerRef.current,
+                rootMargin: '0px',
+                threshold: [0.1, 0.5, 0.9]
+            });
 
-        const observer = new IntersectionObserver(handleIntersection, {
-            root: mainScrollContainerRef.current,
-            rootMargin: '0px',
-            threshold: [0.1, 0.5, 0.9]
-        });
+            Object.values(mainImageRefs.current).forEach(node => {
+                if (node) observer.observe(node);
+            });
 
-        Object.values(mainImageRefs.current).forEach(node => {
-            if (node) observer.observe(node);
-        });
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [files, handleIntersection]);
-
-    useEffect(() => {
-        if (files.length > 0 && mainScrollContainerRef.current) {
-            scrollToPage(1);
+            if (observer && observer.current){
+                return () => {
+                    observer.disconnect();
+                };
+            }
         }
-    }, [files, scrollToPage]);
+
+    }, [files, activePage]);
 
     const handleDeletePage = useCallback(()  => {
         if (activePage < 1 || activePage > files.length){
