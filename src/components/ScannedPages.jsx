@@ -13,7 +13,8 @@ const ScannedPages = ({
                           mainWindowHeight,
                           mainWindowWidth,
                           fitMode,
-                          scale // Receive scale here
+                          setScale,
+                          scale
                       }) => {
     return (
         <div style={{
@@ -36,7 +37,8 @@ const ScannedPages = ({
                     mainWindowHeight={mainWindowHeight}
                     mainWindowWidth={mainWindowWidth}
                     fitMode={fitMode}
-                    scale={scale} // Pass scale to individual page
+                    setScale={setScale}
+                    scale={scale}
                 />
             ))}
         </div>

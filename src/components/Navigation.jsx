@@ -24,9 +24,9 @@ const Navigation = ({
                         handleDeletePage,
                         handleRotatePage,
                         scale,
-                        setScale, // This is now handleScaleChange from ScanPanel
-                        handleFitMode, // This is now toggleFitMode from ScanPanel
-                        fitMode // Receive the current fit mode
+                        setScale,
+                        handleFitMode,
+                        fitMode
                     }) => {
     const [settingsShow, setSettingsShow] = useState(false);
     const [pageInputValue, setPageInputValue] = useState(String(activePage));
@@ -136,11 +136,12 @@ const Navigation = ({
                     <VerticalSeparator />
                     <div className="d-flex align-items-center">
                         <ButtonOutline
-                            isDisabled={totalPages === 0} // Disable if not in manual mode
+                            isDisabled={totalPages === 0}
                             icon={<HiMinus color="#AFB2B6" />}
-                            onClick={() => setScale(prev => Math.max(10, prev - 10))} />
+                            onClick={() => setScale(prev => Math.max(10, prev - 10))}
+                        />
                         <input
-                            disabled={totalPages === 0} // Disable if not in manual mode
+                            disabled={totalPages === 0}
                             type="text"
                             value={scale + '%'}
                             onChange={(e) => setScale(e.target.value.replace(/\D/, ''))}
@@ -165,10 +166,8 @@ const Navigation = ({
                     </div>
 
                     <VerticalSeparator />
-                    {/* Toggle button for fit mode */}
                     <ButtonOutline
                         icon={getFitModeIcon()}
-                        // tooltip={getFitModeTooltip()}
                         isDisabled={totalPages === 0}
                         onClick={handleFitMode}
                     />

@@ -21,6 +21,7 @@ const ScanPanel = () => {
     const [fitMode, setFitMode] = useState('height');
     const [mainWindowHeight, setMainWindowHeight] = useState(0);
     const [mainWindowWidth, setMainWindowWidth] = useState(0);
+    const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
 
     // Use the new useIntersectionObserver hook
     const { activePage, setActivePage, setObservedElementRef } = useIntersectionObserver(
@@ -54,7 +55,7 @@ const ScanPanel = () => {
             mainScrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        setFitMode('height');
+        setFitMode(FIT_MODE.HEIGHT);
         setScale(100);
     };
 
@@ -116,14 +117,22 @@ const ScanPanel = () => {
 
     const toggleFitMode = useCallback(() => {
         setFitMode(prevMode => {
-            if (prevMode === 'height') return 'width';
-            if (prevMode === 'width') return 'height';
+            if (prevMode === FIT_MODE.HEIGHT){
+                // setScale(250/100);
+                return FIT_MODE.WIDTH;
+            }
+            if (prevMode === FIT_MODE.WIDTH){
+                // setScale(100);
+                return FIT_MODE.HEIGHT;
+            }
         });
+
+        // prevMode === FIT_MODE.HEIGHT ? setScale() : setScale();
     }, []);
 
     const handleScaleChange = useCallback((newScale) => {
         setScale(newScale);
-        setFitMode('manual');
+        // setFitMode('manual');
     }, []);
 
 
@@ -160,6 +169,7 @@ const ScanPanel = () => {
                 fitMode={fitMode}
                 mainWindowHeight={mainWindowHeight}
                 mainWindowWidth={mainWindowWidth}
+                setScale={setScale}
                 scale={scale}
                 showSidebar={showSidebar}
             />

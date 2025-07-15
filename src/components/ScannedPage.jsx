@@ -1,5 +1,6 @@
 // src/ScannedPage.jsx
 import React, {forwardRef} from 'react';
+import scannedPages from "./ScannedPages";
 
 const ScannedPage = forwardRef(
     ({
@@ -9,10 +10,12 @@ const ScannedPage = forwardRef(
          highlight,
          type,
          rotationMap,
-         fitMode, // Received
-         mainWindowHeight, // Received
-         mainWindowWidth, // Received
-         scale // Received
+         fitMode,
+         mainWindowHeight,
+         mainWindowWidth,
+         setScale,
+         scale,
+         onImageLoad
      }, ref) => {
 
         const handleClick = () => {
@@ -20,6 +23,26 @@ const ScannedPage = forwardRef(
                 onClick(file.number);
             }
         };
+
+        onImageLoad=(naturalWidth, naturalHeight) => {
+            if (type === 'main') {
+                const rotation = rotationMap?.[index] || 0;
+                let scaleValue = 100;
+
+                if (fitMode === 'height') {
+                    const imageDisplayHeight = mainWindowHeight - 100;
+                    const baseHeight = (rotation % 180 === 0) ? naturalHeight : naturalWidth;
+                    scaleValue = Math.round((imageDisplayHeight / baseHeight) * 100);
+                } else if (fitMode === 'width') {
+                    const imageDisplayWidth = mainWindowWidth - 340;
+                    const baseWidth = (rotation % 180 === 0) ? naturalWidth : naturalHeight;
+                    scaleValue = Math.round((imageDisplayWidth / baseWidth) * 100);
+                }
+
+                setScale(scaleValue);
+            }
+        }
+
 
         const imageStyle = {
             borderRadius: '6px',
@@ -43,7 +66,7 @@ const ScannedPage = forwardRef(
             width: '100%', // Container spans full width to allow centering
             boxSizing: 'border-box',
             paddingLeft: type === 'main' ? '20px' : '0', // Add some horizontal padding for main images
-            paddingRight: type === 'main' ? '20px' : '0'
+            paddingRight: type === 'main' ? '20px' : '0',
         };
 
         let calculatedImageWidth = 'auto';
@@ -59,12 +82,7 @@ const ScannedPage = forwardRef(
             } else if (fitMode === 'width') {
                 calculatedImageWidth = `${mainWindowWidth - viewportHorizontalPadding-300}px`;
                 calculatedImageHeight = 'auto';
-            }
-            else { // fitMode === 'manual'
-                calculatedImageWidth = `${scale}%`; // Use scale for manual zoom
-                calculatedImageHeight = 'auto'; // Maintain aspect ratio
-                // You could also apply scale to height:
-                // calculatedImageHeight = `${scale}%`;
+                setScale(100);
             }
         } else { // Sidebar images (thumbnails)
             calculatedImageWidth = '120px';
@@ -87,15 +105,15 @@ const ScannedPage = forwardRef(
                     alt={`Page ${file.number}`}
                     style={{
                         ...imageStyle,
-                        transform: `rotate(-${rotationMap?.[index] || 0}deg)`,
+                        transform: `rotate(-${rotationMap?.[index] || 0}deg) scale(${scale / 100})`,
                         width: calculatedImageWidth,
                         height: calculatedImageHeight,
-                        // Ensure image doesn't overflow its parent even if scale is huge
-                        // These max values refer to the *container's* size, which we want the image to fill.
-                        // They are generally redundant if width/height are set directly, but can be a safeguard.
-                        // Removed for direct width/height setting, object-fit handles the rest.
-                        // maxWidth: `${mainWindowWidth - viewportHorizontalPadding}px`,
-                        // maxHeight: `${mainWindowHeight - viewportPadding}px`,
+                    }}
+                    onLoad={(e) => {
+                        if (onImageLoad) {
+                            const img = e.target;
+                            onImageLoad(img.naturalWidth, img.naturalHeight);
+                        }
                     }}
                 />
                 {type === 'sidebar' ? file.number : ''}

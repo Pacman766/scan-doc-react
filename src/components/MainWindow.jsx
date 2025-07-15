@@ -11,8 +11,9 @@ const MainWindow = React.forwardRef(({
                                          mainWindowWidth,
                                          mainWindowHeight,
                                          fitMode,
-                                         scale,
-                                         showSidebar
+                                         showSidebar,
+                                         setScale,
+                                         scale
                                      }, mainScrollContainerRef) => {
     return (
         <div
@@ -43,7 +44,8 @@ const MainWindow = React.forwardRef(({
                 mainWindowWidth={mainWindowWidth}
                 mainWindowHeight={mainWindowHeight}
                 fitMode={fitMode}
-                scale={scale} // Pass scale to ScannedPages
+                setScale={setScale}
+                scale={scale}
             />
         </div>
     );
