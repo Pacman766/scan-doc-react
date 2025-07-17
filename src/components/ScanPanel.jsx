@@ -2,7 +2,8 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Navigation from "./Navigation";
 import Sidebar from "./Sidebar";
 import MainWindow from "./MainWindow";
-import { useIntersectionObserver } from "../hooks/useIntersection"; // Import new hook
+import { useIntersectionObserver } from "../hooks/useIntersection";
+import {useChangeImgSize} from "../hooks/useChangeImgSize";
 
 
 const ScanPanel = () => {
@@ -15,19 +16,20 @@ const ScanPanel = () => {
 
     const [files, setFiles] = useState([]);
     const [showSidebar, setShowSidebar] = useState(true);
-    const mainScrollContainerRef = useRef(null);
     const [rotationMap, setRotationMap] = useState({});
-    const [scale, setScale] = useState(100);
-    const [fitMode, setFitMode] = useState('height');
     const [mainWindowHeight, setMainWindowHeight] = useState(0);
     const [mainWindowWidth, setMainWindowWidth] = useState(0);
+
+    const mainScrollContainerRef = useRef(null);
+    const localImageRefs = useRef({});
+
     const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
 
-    // Use the new useIntersectionObserver hook
     const { activePage, setActivePage, setObservedElementRef } = useIntersectionObserver(
         mainScrollContainerRef,
         1 // Initial active page
     );
+    const {toggleFitMode, handleScaleChange, scale, setScale, fitMode, setFitMode} = useChangeImgSize()
 
     /**
      * Обновление размера картинок в основном окне по кнопке "По размеру страницы"
@@ -41,6 +43,13 @@ const ScanPanel = () => {
             updateSize();
             window.addEventListener('resize', updateSize);
             return () => window.removeEventListener('resize', updateSize);
+        }
+    }, []);
+
+    const scrollToPage = useCallback((pageNumber) => {
+        const targetElement = localImageRefs.current[pageNumber];
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, []);
 
@@ -59,8 +68,6 @@ const ScanPanel = () => {
         setScale(100);
     };
 
-    const localImageRefs = useRef({});
-
     const setMainImageRef = useCallback((pageNumber, el) => {
         setObservedElementRef(pageNumber, el);
 
@@ -70,13 +77,6 @@ const ScanPanel = () => {
             delete localImageRefs.current[pageNumber];
         }
     }, [setObservedElementRef]);
-
-    const scrollToPage = useCallback((pageNumber) => {
-        const targetElement = localImageRefs.current[pageNumber];
-        if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }, []);
 
     const handleDeletePage = useCallback(()  => {
         if (activePage < 1 || activePage > files.length){
@@ -114,27 +114,6 @@ const ScanPanel = () => {
             )
         );
     };
-
-    const toggleFitMode = useCallback(() => {
-        setFitMode(prevMode => {
-            if (prevMode === FIT_MODE.HEIGHT){
-                // setScale(250/100);
-                return FIT_MODE.WIDTH;
-            }
-            if (prevMode === FIT_MODE.WIDTH){
-                // setScale(100);
-                return FIT_MODE.HEIGHT;
-            }
-        });
-
-        // prevMode === FIT_MODE.HEIGHT ? setScale() : setScale();
-    }, []);
-
-    const handleScaleChange = useCallback((newScale) => {
-        setScale(newScale);
-        // setFitMode('manual');
-    }, []);
-
 
     return (
         <div className="dark-mode">
