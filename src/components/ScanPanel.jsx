@@ -1,55 +1,49 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import Navigation from "./Navigation";
 import Sidebar from "./Sidebar";
 import MainWindow from "./MainWindow";
-import { useIntersectionObserver } from "../hooks/useIntersection";
+import {useIntersectionObserver} from "../hooks/useIntersection";
 import {useChangeImgSize} from "../hooks/useChangeImgSize";
 
 
 const ScanPanel = () => {
     const data = [
-        { number: 1, type: 'jpg', content: 'jpg/api_page-0001.jpg' },
-        { number: 2, type: 'jpg', content: 'jpg/api_page-0002.jpg' },
-        { number: 3, type: 'jpg', content: 'jpg/api_page-0003.jpg' },
-        { number: 4, type: 'jpg', content: 'jpg/api_page-0004.jpg' }
+        {number: 1, type: 'jpg', content: 'jpg/api_page-0001.jpg'},
+        {number: 2, type: 'jpg', content: 'jpg/api_page-0002.jpg'},
+        {number: 3, type: 'jpg', content: 'jpg/api_page-0003.jpg'},
+        {number: 4, type: 'jpg', content: 'jpg/api_page-0004.jpg'}
     ];
 
     const [files, setFiles] = useState([]);
     const [showSidebar, setShowSidebar] = useState(true);
     const [rotationMap, setRotationMap] = useState({});
-    const [mainWindowHeight, setMainWindowHeight] = useState(0);
-    const [mainWindowWidth, setMainWindowWidth] = useState(0);
 
     const mainScrollContainerRef = useRef(null);
     const localImageRefs = useRef({});
 
     const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
 
-    const { activePage, setActivePage, setObservedElementRef } = useIntersectionObserver(
+    const {activePage, setActivePage, setObservedElementRef} = useIntersectionObserver(
         mainScrollContainerRef,
         1 // Initial active page
     );
-    const {toggleFitMode, handleScaleChange, scale, setScale, fitMode, setFitMode} = useChangeImgSize()
-
-    /**
-     * Обновление размера картинок в основном окне по кнопке "По размеру страницы"
-     */
-    useEffect(() => {
-        if (mainScrollContainerRef.current) {
-            const updateSize = () => {
-                setMainWindowHeight(mainScrollContainerRef.current.clientHeight);
-                setMainWindowWidth(mainScrollContainerRef.current.clientWidth);
-            };
-            updateSize();
-            window.addEventListener('resize', updateSize);
-            return () => window.removeEventListener('resize', updateSize);
-        }
-    }, []);
+    const {
+        toggleFitMode,
+        handleScaleChange,
+        scale,
+        setScale,
+        fitMode,
+        setFitMode,
+        mainWindowHeight,
+        setMainWindowHeight,
+        mainWindowWidth,
+        setMainWindowWidth
+    } = useChangeImgSize(mainScrollContainerRef)
 
     const scrollToPage = useCallback((pageNumber) => {
         const targetElement = localImageRefs.current[pageNumber];
         if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
         }
     }, []);
 
@@ -61,7 +55,7 @@ const ScanPanel = () => {
         setFiles(data);
         setActivePage(1);
         if (mainScrollContainerRef.current) {
-            mainScrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            mainScrollContainerRef.current.scrollTo({top: 0, behavior: 'smooth'});
         }
 
         setFitMode(FIT_MODE.HEIGHT);
@@ -78,23 +72,23 @@ const ScanPanel = () => {
         }
     }, [setObservedElementRef]);
 
-    const handleDeletePage = useCallback(()  => {
-        if (activePage < 1 || activePage > files.length){
+    const handleDeletePage = useCallback(() => {
+        if (activePage < 1 || activePage > files.length) {
             console.warn("Cannot delete: activePage is out of bounds.");
             return;
         }
 
-        let newArr = files.filter((_,i) => {
-            return  i !== activePage-1
+        let newArr = files.filter((_, i) => {
+            return i !== activePage - 1
         });
-        newArr.forEach((file,i) => {
-            file.number = i+1;
+        newArr.forEach((file, i) => {
+            file.number = i + 1;
         });
         setFiles(newArr);
 
-        if (newArr.length === 0){
+        if (newArr.length === 0) {
             setActivePage(1);
-        } else if (activePage > newArr.length){
+        } else if (activePage > newArr.length) {
             scrollToPage(newArr.length);
         } else {
             scrollToPage(activePage);
@@ -110,7 +104,7 @@ const ScanPanel = () => {
         }));
         setFiles(prevFiles =>
             prevFiles.map((file, i) =>
-                i === index ? { ...file, degree: newDegree } : file
+                i === index ? {...file, degree: newDegree} : file
             )
         );
     };
