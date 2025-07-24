@@ -4,6 +4,8 @@ import Sidebar from "./Sidebar";
 import MainWindow from "./MainWindow";
 import {useIntersectionObserver} from "../hooks/useIntersection";
 import {useChangeImgSize} from "../hooks/useChangeImgSize";
+import {AiOutlineColumnWidth} from "react-icons/ai";
+import {useConfig} from "../hooks/useConfig";
 
 
 const ScanPanel = () => {
@@ -17,6 +19,7 @@ const ScanPanel = () => {
     const [files, setFiles] = useState([]);
     const [showSidebar, setShowSidebar] = useState(true);
     const [rotationMap, setRotationMap] = useState({});
+    const [scanners, setScanners] = useState([]);
 
     const mainScrollContainerRef = useRef(null);
     const localImageRefs = useRef({});
@@ -38,7 +41,9 @@ const ScanPanel = () => {
         setMainWindowHeight,
         mainWindowWidth,
         setMainWindowWidth
-    } = useChangeImgSize(mainScrollContainerRef)
+    } = useChangeImgSize(mainScrollContainerRef);
+
+    const {config, getScanners, getConfig} = useConfig(scanners, setScanners);
 
     const scrollToPage = useCallback((pageNumber) => {
         const targetElement = localImageRefs.current[pageNumber];
@@ -51,9 +56,11 @@ const ScanPanel = () => {
         setShowSidebar(!showSidebar);
     };
 
-    const handleScan = () => {
+    const handleScan = async () => {
         setFiles(data);
         setActivePage(1);
+        await getConfig();
+        await getScanners();
         if (mainScrollContainerRef.current) {
             mainScrollContainerRef.current.scrollTo({top: 0, behavior: 'smooth'});
         }
