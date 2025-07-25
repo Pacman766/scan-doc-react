@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Navigation from "./Navigation";
 import Sidebar from "./Sidebar";
 import MainWindow from "./MainWindow";
@@ -45,6 +45,10 @@ const ScanPanel = () => {
 
     const {config, getScanners, getConfig} = useConfig(scanners, setScanners);
 
+    useEffect(() => {
+        getConfig();
+    }, []);
+
     const scrollToPage = useCallback((pageNumber) => {
         const targetElement = localImageRefs.current[pageNumber];
         if (targetElement) {
@@ -56,11 +60,9 @@ const ScanPanel = () => {
         setShowSidebar(!showSidebar);
     };
 
-    const handleScan = async () => {
+    const handleScan = () => {
         setFiles(data);
         setActivePage(1);
-        await getConfig();
-        await getScanners();
         if (mainScrollContainerRef.current) {
             mainScrollContainerRef.current.scrollTo({top: 0, behavior: 'smooth'});
         }
@@ -130,6 +132,8 @@ const ScanPanel = () => {
                 setScale={handleScaleChange}
                 handleFitMode={toggleFitMode}
                 fitMode={fitMode}
+                getScanners={getScanners}
+                config={config}
             />
             <Sidebar
                 showSidebar={showSidebar}

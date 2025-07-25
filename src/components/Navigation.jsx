@@ -26,9 +26,10 @@ const Navigation = ({
                         scale,
                         setScale,
                         handleFitMode,
-                        fitMode
+                        fitMode,
+                        config,
+                        getScanners
                     }) => {
-    const [settingsShow, setSettingsShow] = useState(false);
     const [pageInputValue, setPageInputValue] = useState(String(activePage));
     const [showTooltip, setShowTooltip] = useState(false);
     const pageInputRef = useRef(null);
@@ -189,16 +190,11 @@ const Navigation = ({
                         text={"Сохранить"}
                         isDisabled={totalPages === 0}
                     />
-                    <ButtonDefault
-                        icon={<IoSettingsOutline color="#AFB2B6" />}
-                        tooltip={"Настройки"}
-                        onClick={() => setSettingsShow(true)}
-                    />
                 </div>
             </Container>
             <SettingsDialog
-                settingsShow={settingsShow}
-                onHide={() => setSettingsShow(false)}
+                config={config}
+                getScanners={getScanners}
             />
         </Navbar>
     );
