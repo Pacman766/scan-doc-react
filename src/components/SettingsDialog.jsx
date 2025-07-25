@@ -1,31 +1,48 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Modal, Row, Col, Form} from 'react-bootstrap';
 import ButtonDefault from './buttonDefault/ButtonDefault';
 import SettingsDropdown from './settingsDropdown/SettingsDropdown';
 import {IoSettingsOutline} from "react-icons/io5";
 
-const SettingsDialog = ({getScanners, config}) => {
-    const [scanner, setScanner] = useState("");
-    const [resolution, setResolution] = useState("");
-    const [colorMode, setColorMode] = useState("");
-    const [feeder, setFeeder] = useState(false);
-    const [duplex, setDuplex] = useState(false);
-    const [tempConfig, setTempConfig] = useState({});
+const SettingsDialog = ({getScanners, scanners, config, changeConfig }) => {
     const [settingsShow, setSettingsShow] = useState(false);
-
-    const scannerOptions = ["ScanJet 3000", "Canon DR"];
+    const [tempConfig, setTempConfig] = useState({});
+    const [scannerNames, setScannerNames] = useState([]);
     const resolutionOptions = [100, 200, 300, 400, 500];
     const colorOptions = ["Оттенки серого", "Цветной", "Черно-белый"];
+    const [tempSelectedColor, setTempSelectedColor] = useState('');
+    const colorMapping = {
+        bw: 'Черно-белый',
+        gray: 'Оттенки серого',
+        rgb: 'Цветной'
+    };
+    const reverseColorMapping = {
+        'Черно-белый': 'bw',
+        'Оттенки серого': 'gray',
+        'Цветной': 'rgb'
+    };
+
+    useEffect(() => {
+        setTempConfig(config);
+    }, [config]);
+
 
     const openSettingsWindow = async () => {
         await getScanners();
+        setScannerNames(scanners.map(s => s.scannerName));
         setTempConfig(config);
+        setTempSelectedColor(colorMapping[config.color]);
         setSettingsShow(true);
-    }
+    };
 
     const closeSettingsWindow = () => {
         setSettingsShow(false);
-    }
+    };
+
+    const handleSave = async () => {
+        await changeConfig(tempConfig);
+        setSettingsShow(false);
+    };
 
     return (
         <>
@@ -51,9 +68,14 @@ const SettingsDialog = ({getScanners, config}) => {
                 <Modal.Body>
                     <SettingsDropdown
                         title="Сканер*"
-                        data={scannerOptions}
-                        selected={scanner}
-                        onSelect={setScanner}
+                        data={scannerNames}
+                        selected={scannerNames[0]}
+                        onSelect={(value) => {
+                            setTempConfig((prev) => ({
+                                ...prev,
+                                scannerNames: value
+                            }))
+                        }}
                     />
                     <hr/>
 
@@ -62,16 +84,22 @@ const SettingsDialog = ({getScanners, config}) => {
                             <SettingsDropdown
                                 title="Разрешение"
                                 data={resolutionOptions}
-                                selected={resolution}
-                                onSelect={setResolution}
+                                selected={tempConfig.dpi}
+                                onSelect={() => setTempConfig(prev => ({...prev, 'feeder': tempConfig.dpi}))}
                             />
                         </Col>
                         <Col md={6}>
                             <SettingsDropdown
                                 title="Цветовой формат"
                                 data={colorOptions}
-                                selected={colorMode}
-                                onSelect={setColorMode}
+                                selected={tempSelectedColor}
+                                onSelect={(value) => {
+                                    setTempSelectedColor(value);
+                                    setTempConfig((prev) => ({
+                                        ...prev,
+                                        color: reverseColorMapping[value]
+                                    }));
+                                }}
                             />
                         </Col>
                     </Row>
@@ -82,8 +110,13 @@ const SettingsDialog = ({getScanners, config}) => {
                                 id="feeder-checkbox"
                                 type="checkbox"
                                 label="Поточное сканирование"
-                                checked={feeder}
-                                onChange={() => setFeeder(!feeder)}
+                                checked={tempConfig.feeder}
+                                onChange={() =>
+                                    setTempConfig((prev) => ({
+                                        ...prev,
+                                        feeder: !prev.feeder
+                                    }))
+                                }
                             />
                         </Col>
                         <Col md={6}>
@@ -91,9 +124,14 @@ const SettingsDialog = ({getScanners, config}) => {
                                 id="duplex-checkbox"
                                 type="checkbox"
                                 label="Двустороннее"
-                                checked={duplex}
-                                onChange={() => setDuplex(!duplex)}
-                                disabled={!feeder}
+                                checked={tempConfig.duplex}
+                                disabled={!tempConfig.feeder}
+                                onChange={() =>
+                                    setTempConfig((prev) => ({
+                                        ...prev,
+                                        duplex: !prev.duplex
+                                    }))
+                                }
                             />
                         </Col>
                     </Row>
@@ -101,7 +139,7 @@ const SettingsDialog = ({getScanners, config}) => {
                     <small className="text-muted d-block mt-3">* обязательные для заполнения поля</small>
                 </Modal.Body>
                 <Modal.Footer>
-                    <ButtonDefault tooltip={"Сохранить"} onClick={closeSettingsWindow} text={"Сохранить"}></ButtonDefault>
+                    <ButtonDefault tooltip={"Сохранить"} onClick={handleSave} text={"Сохранить"}></ButtonDefault>
                     <ButtonDefault tooltip={"Настройки"} onClick={closeSettingsWindow} text={"Отмена"}></ButtonDefault>
                 </Modal.Footer>
             </Modal>

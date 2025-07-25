@@ -19,7 +19,6 @@ const ScanPanel = () => {
     const [files, setFiles] = useState([]);
     const [showSidebar, setShowSidebar] = useState(true);
     const [rotationMap, setRotationMap] = useState({});
-    const [scanners, setScanners] = useState([]);
 
     const mainScrollContainerRef = useRef(null);
     const localImageRefs = useRef({});
@@ -43,11 +42,7 @@ const ScanPanel = () => {
         setMainWindowWidth
     } = useChangeImgSize(mainScrollContainerRef);
 
-    const {config, getScanners, getConfig} = useConfig(scanners, setScanners);
-
-    useEffect(() => {
-        getConfig();
-    }, []);
+    const {config, getScanners, getConfig, scanners} = useConfig();
 
     const scrollToPage = useCallback((pageNumber) => {
         const targetElement = localImageRefs.current[pageNumber];
@@ -118,6 +113,10 @@ const ScanPanel = () => {
         );
     };
 
+    useEffect(() => {
+        getConfig();
+    }, []);
+
     return (
         <div className="dark-mode">
             <Navigation
@@ -132,8 +131,9 @@ const ScanPanel = () => {
                 setScale={handleScaleChange}
                 handleFitMode={toggleFitMode}
                 fitMode={fitMode}
-                getScanners={getScanners}
+                scanners={scanners}
                 config={config}
+                getScanners={getScanners}
             />
             <Sidebar
                 showSidebar={showSidebar}
