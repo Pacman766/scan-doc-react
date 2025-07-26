@@ -6,6 +6,7 @@ import {useIntersectionObserver} from "../hooks/useIntersection";
 import {useChangeImgSize} from "../hooks/useChangeImgSize";
 import {AiOutlineColumnWidth} from "react-icons/ai";
 import {useConfig} from "../hooks/useConfig";
+import {useScanFiles} from "../hooks/useScanFiles"
 
 
 const ScanPanel = () => {
@@ -19,6 +20,7 @@ const ScanPanel = () => {
     const [files, setFiles] = useState([]);
     const [showSidebar, setShowSidebar] = useState(true);
     const [rotationMap, setRotationMap] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const mainScrollContainerRef = useRef(null);
     const localImageRefs = useRef({});
@@ -42,7 +44,7 @@ const ScanPanel = () => {
         setMainWindowWidth
     } = useChangeImgSize(mainScrollContainerRef);
 
-    const {config, getScanners, getConfig, scanners} = useConfig();
+    const {config, getScanners, getConfig, scanners, saveConfig} = useConfig();
 
     const scrollToPage = useCallback((pageNumber) => {
         const targetElement = localImageRefs.current[pageNumber];
@@ -50,6 +52,8 @@ const ScanPanel = () => {
             targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
         }
     }, []);
+
+    const {scan, handleDeletePage} = useScanFiles(files, setFiles, setLoading, activePage, setActivePage, scrollToPage);
 
     const toggleSidebar = () => {
         setShowSidebar(!showSidebar);
@@ -75,29 +79,6 @@ const ScanPanel = () => {
             delete localImageRefs.current[pageNumber];
         }
     }, [setObservedElementRef]);
-
-    const handleDeletePage = useCallback(() => {
-        if (activePage < 1 || activePage > files.length) {
-            console.warn("Cannot delete: activePage is out of bounds.");
-            return;
-        }
-
-        let newArr = files.filter((_, i) => {
-            return i !== activePage - 1
-        });
-        newArr.forEach((file, i) => {
-            file.number = i + 1;
-        });
-        setFiles(newArr);
-
-        if (newArr.length === 0) {
-            setActivePage(1);
-        } else if (activePage > newArr.length) {
-            scrollToPage(newArr.length);
-        } else {
-            scrollToPage(activePage);
-        }
-    }, [activePage, files, scrollToPage]);
 
     const handleRotatePage = (index) => {
         const newDegree = (rotationMap[index] || 0) + 90;
@@ -134,6 +115,8 @@ const ScanPanel = () => {
                 scanners={scanners}
                 config={config}
                 getScanners={getScanners}
+                saveConfig={saveConfig}
+
             />
             <Sidebar
                 showSidebar={showSidebar}

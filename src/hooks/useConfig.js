@@ -11,14 +11,14 @@ export const useConfig = () => {
             return;
         }
 
-        await window.IsidaImageScanning.getScannersList()
-            .then(result => {
-                console.log(result.scanners);
-                setScanners(result.scanners);
-            })
-            .catch(error => {
-                console.log(error.status.description);
-            })
+        try {
+            const result = await window.IsidaImageScanning.getScannersList();
+            setScanners(result.scanners);
+            return result.scanners;
+        } catch (e) {
+            console.log(e.status?.description || e.message);
+            return [];
+        }
     }
 
     const getConfig = async () => {
@@ -33,7 +33,7 @@ export const useConfig = () => {
 
     const saveConfig = async (newConfig) => {
         try {
-            const response = await axios.put('/portal/rs/scan/config/save', config);
+            const response = await axios.put('/portal/rs/scan/config/save', newConfig);
             if (response.status === 200) {
                 setConfig(newConfig);
                 console.log('Settings saved:', newConfig);
@@ -41,10 +41,6 @@ export const useConfig = () => {
         } catch (e) {
             console.log('Failed to fetch data: ', e);
         }
-    }
-
-    const changeConfig = async (newConfig) => {
-        await saveConfig(newConfig);
     }
 
 
@@ -55,5 +51,5 @@ export const useConfig = () => {
         getScanners,
         getConfig,
         saveConfig,
-        changeConfig };
+    };
 };

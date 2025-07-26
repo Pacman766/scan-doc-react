@@ -29,7 +29,8 @@ const Navigation = ({
                         fitMode,
                         config,
                         getScanners,
-                        scanners
+                        scanners,
+                        saveConfig
                     }) => {
     const [pageInputValue, setPageInputValue] = useState(String(activePage));
     const [showTooltip, setShowTooltip] = useState(false);
@@ -197,6 +198,7 @@ const Navigation = ({
                 config={config}
                 getScanners={getScanners}
                 scanners={scanners}
+                saveConfig={saveConfig}
             />
         </Navbar>
     );

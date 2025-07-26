@@ -4,7 +4,7 @@ import ButtonDefault from './buttonDefault/ButtonDefault';
 import SettingsDropdown from './settingsDropdown/SettingsDropdown';
 import {IoSettingsOutline} from "react-icons/io5";
 
-const SettingsDialog = ({getScanners, scanners, config, changeConfig }) => {
+const SettingsDialog = ({getScanners, scanners, config, saveConfig }) => {
     const [settingsShow, setSettingsShow] = useState(false);
     const [tempConfig, setTempConfig] = useState({});
     const [scannerNames, setScannerNames] = useState([]);
@@ -28,8 +28,8 @@ const SettingsDialog = ({getScanners, scanners, config, changeConfig }) => {
 
 
     const openSettingsWindow = async () => {
-        await getScanners();
-        setScannerNames(scanners.map(s => s.scannerName));
+        const scannersList = await getScanners();
+        setScannerNames(scannersList.map(s => s.scannerName));
         setTempConfig(config);
         setTempSelectedColor(colorMapping[config.color]);
         setSettingsShow(true);
@@ -40,7 +40,7 @@ const SettingsDialog = ({getScanners, scanners, config, changeConfig }) => {
     };
 
     const handleSave = async () => {
-        await changeConfig(tempConfig);
+        await saveConfig(tempConfig);
         setSettingsShow(false);
     };
 
@@ -73,7 +73,7 @@ const SettingsDialog = ({getScanners, scanners, config, changeConfig }) => {
                         onSelect={(value) => {
                             setTempConfig((prev) => ({
                                 ...prev,
-                                scannerNames: value
+                                scannerName: value
                             }))
                         }}
                     />
@@ -85,7 +85,10 @@ const SettingsDialog = ({getScanners, scanners, config, changeConfig }) => {
                                 title="Разрешение"
                                 data={resolutionOptions}
                                 selected={tempConfig.dpi}
-                                onSelect={() => setTempConfig(prev => ({...prev, 'feeder': tempConfig.dpi}))}
+                                onSelect={(value) => setTempConfig(prev => ({
+                                    ...prev,
+                                    dpi: value
+                                }))}
                             />
                         </Col>
                         <Col md={6}>
