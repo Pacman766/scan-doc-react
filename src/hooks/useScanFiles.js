@@ -58,17 +58,18 @@ export const useScanFiles = (files, setFiles, setLoading, activePage, setActiveP
                         })
                         .catch(error => {
                             setLoading(false);
-                            console.log(`Ошибка сканирования (getImageScanningFiles): ${error.status}`);
+                            console.error(`Ошибка сканирования (getImageScanningFiles): ${error.status}`);
                         })
 
                 })
                 .catch(error => {
                     setLoading(false);
-                    console.log(`Ошибка сканирования (getImageScanningFiles): ${error.status}, description: ${error.status.description}`)
+                    console.error(`Ошибка сканирования (getImageScanningFiles): ${error.status}, description: ${error.status.description}`)
                 })
 
         } catch (e){
-
+            setLoading(false);
+            console.error(`Ошибка сканирования (getImageScanningFiles): ${e.status}`)
         }
     }
 

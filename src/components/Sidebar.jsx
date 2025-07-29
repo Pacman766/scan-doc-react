@@ -11,10 +11,8 @@ const Sidebar = ({
                      scrollToPage,
                      rotationMap
                  }) => {
-    // Create a ref object to store individual sidebar item DOM nodes
     const sidebarItemRefs = useRef({});
 
-    // Callback to set the ref for each sidebar item
     const setSidebarItemRef = useCallback((pageNumber, el) => {
         if (el) {
             sidebarItemRefs.current[pageNumber] = el;
@@ -23,7 +21,6 @@ const Sidebar = ({
         }
     }, []);
 
-    // Effect to scroll the active sidebar item into view
     useEffect(() => {
         const ref = sidebarItemRefs.current[activePage];
         if (ref) {
@@ -50,12 +47,11 @@ const Sidebar = ({
                          style={{ overflowY: 'auto', marginTop: '30px' }}>
                         <ScannedPages
                             files={files}
-                            imgWidth="90%"
-                            activePage={activePage} // Pass activePage
-                            onPageClick={scrollToPage} // Click on sidebar item also scrolls main view
-                            highlightActive={true} // Always highlight in sidebar
-                            setPageRef={setSidebarItemRef} // Pass the ref setter for sidebar items
-                            type="sidebar" // Indicate it's the sidebar
+                            activePage={activePage}
+                            onPageClick={scrollToPage}
+                            highlightActive={true}
+                            setPageRef={setSidebarItemRef}
+                            type="sidebar"
                             rotationMap={rotationMap}
                         />
                     </div>

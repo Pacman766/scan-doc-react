@@ -21,15 +21,26 @@ const ScanPanel = () => {
     const [showSidebar, setShowSidebar] = useState(true);
     const [rotationMap, setRotationMap] = useState({});
     const [loading, setLoading] = useState(false);
+    const [isZooming, setZooming] = useState(false);
 
     const mainScrollContainerRef = useRef(null);
-    const localImageRefs = useRef({});
+    const imageRefs = useRef([]);
 
     const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
 
-    const {activePage, setActivePage, setObservedElementRef} = useIntersectionObserver(
+    const {
+        activePage,
+        setActivePage,
+        // setObservedElementRef,
+        // setMainImageRef,
+        scrollToPage
+    } = useIntersectionObserver(
         mainScrollContainerRef,
-        1 // Initial active page
+        1,
+        files,
+        isZooming,
+        setZooming,
+        imageRefs
     );
     const {
         toggleFitMode,
@@ -41,17 +52,12 @@ const ScanPanel = () => {
         mainWindowHeight,
         setMainWindowHeight,
         mainWindowWidth,
-        setMainWindowWidth
-    } = useChangeImgSize(mainScrollContainerRef);
+        setMainWindowWidth,
+        incScale,
+        decScale
+    } = useChangeImgSize(mainScrollContainerRef, setZooming);
 
     const {config, getScanners, getConfig, scanners, saveConfig} = useConfig();
-
-    const scrollToPage = useCallback((pageNumber) => {
-        const targetElement = localImageRefs.current[pageNumber];
-        if (targetElement) {
-            targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }
-    }, []);
 
     const {scan, handleDeletePage} = useScanFiles(files, setFiles, setLoading, activePage, setActivePage, scrollToPage);
 
@@ -69,16 +75,6 @@ const ScanPanel = () => {
         setFitMode(FIT_MODE.HEIGHT);
         setScale(100);
     };
-
-    const setMainImageRef = useCallback((pageNumber, el) => {
-        setObservedElementRef(pageNumber, el);
-
-        if (el) {
-            localImageRefs.current[pageNumber] = el;
-        } else {
-            delete localImageRefs.current[pageNumber];
-        }
-    }, [setObservedElementRef]);
 
     const handleRotatePage = (index) => {
         const newDegree = (rotationMap[index] || 0) + 90;
@@ -98,6 +94,12 @@ const ScanPanel = () => {
         getConfig();
     }, []);
 
+    useEffect(() => {
+        return () => {
+            imageRefs.current = []
+        }
+    }, [files]);
+
     return (
         <div className="dark-mode">
             <Navigation
@@ -116,7 +118,8 @@ const ScanPanel = () => {
                 config={config}
                 getScanners={getScanners}
                 saveConfig={saveConfig}
-
+                incScale={incScale}
+                decScale={decScale}
             />
             <Sidebar
                 showSidebar={showSidebar}
@@ -130,7 +133,7 @@ const ScanPanel = () => {
                 files={files}
                 activePage={activePage}
                 scrollToPage={scrollToPage}
-                setMainImageRef={setMainImageRef}
+                // setMainImageRef={setMainImageRef}
                 ref={mainScrollContainerRef}
                 rotationMap={rotationMap}
                 fitMode={fitMode}
@@ -139,6 +142,7 @@ const ScanPanel = () => {
                 setScale={setScale}
                 scale={scale}
                 showSidebar={showSidebar}
+                imageRefs={imageRefs}
             />
         </div>
     );

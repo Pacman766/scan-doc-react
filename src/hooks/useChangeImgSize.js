@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 
-export const useChangeImgSize = (mainScrollContainerRef) => {
+export const useChangeImgSize = (mainScrollContainerRef, setZooming) => {
     const [scale, setScale] = useState(100);
     const [fitMode, setFitMode] = useState('height');
     const [mainWindowHeight, setMainWindowHeight] = useState(0);
@@ -39,6 +39,16 @@ export const useChangeImgSize = (mainScrollContainerRef) => {
         }
     }, []);
 
+    const incScale = () => {
+        setScale(prev => Math.min(400, prev + 10));
+        setZooming(true);
+    }
+
+    const decScale = () => {
+        setScale(prev => Math.max(10, prev - 10));
+        setZooming(true);
+    }
+
 
     return {
         toggleFitMode,
@@ -50,6 +60,8 @@ export const useChangeImgSize = (mainScrollContainerRef) => {
         mainWindowHeight,
         setMainWindowHeight,
         mainWindowWidth,
-        setMainWindowWidth
+        setMainWindowWidth,
+        incScale,
+        decScale
     }
 }

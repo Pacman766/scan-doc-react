@@ -14,7 +14,8 @@ const ScannedPages = ({
                           mainWindowWidth,
                           fitMode,
                           setScale,
-                          scale
+                          scale,
+                          imageRefs
                       }) => {
     return (
         <div style={{
@@ -29,7 +30,6 @@ const ScannedPages = ({
                     key={file.number}
                     file={file}
                     index={index}
-                    ref={(el) => setPageRef(file.number, el)}
                     onClick={() => onPageClick?.(file.number)}
                     highlight={highlightActive && activePage === file.number}
                     type={type}
@@ -39,6 +39,11 @@ const ScannedPages = ({
                     fitMode={fitMode}
                     setScale={setScale}
                     scale={scale}
+                    ref={(el) => {
+                        if (imageRefs?.current) {
+                            imageRefs.current[index] = el;
+                        }
+                    }}
                 />
             ))}
         </div>

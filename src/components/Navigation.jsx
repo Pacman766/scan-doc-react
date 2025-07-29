@@ -30,7 +30,9 @@ const Navigation = ({
                         config,
                         getScanners,
                         scanners,
-                        saveConfig
+                        saveConfig,
+                        incScale,
+                        decScale
                     }) => {
     const [pageInputValue, setPageInputValue] = useState(String(activePage));
     const [showTooltip, setShowTooltip] = useState(false);
@@ -48,20 +50,20 @@ const Navigation = ({
         }
     };
 
-    const handlePageInputBlur = () => {
-        let pageNum = parseInt(pageInputValue, 10);
-        if (isNaN(pageNum) || pageNum < 1) {
-            pageNum = 1;
-        }
-        if (pageNum > totalPages) {
-            pageNum = totalPages;
-        }
-        setPageInputValue(String(pageNum));
-        if (pageNum !== activePage) {
-            scrollToPage(pageNum);
-        }
-        setShowTooltip(false);
-    };
+    // const handlePageInputBlur = () => {
+    //     let pageNum = parseInt(pageInputValue, 10);
+    //     if (isNaN(pageNum) || pageNum < 1) {
+    //         pageNum = 1;
+    //     }
+    //     if (pageNum > totalPages) {
+    //         pageNum = totalPages;
+    //     }
+    //     setPageInputValue(String(pageNum));
+    //     if (pageNum !== activePage) {
+    //         scrollToPage(pageNum);
+    //     }
+    //     setShowTooltip(false);
+    // };
 
     const handlePageInputFocus = () => {
         if (totalPages === 0) return;
@@ -113,7 +115,7 @@ const Navigation = ({
                                 type="text"
                                 value={pageInputValue}
                                 onChange={handlePageInputChange}
-                                onBlur={handlePageInputBlur}
+                                // onBlur={handlePageInputBlur}
                                 onFocus={handlePageInputFocus}
                                 style={{
                                     width: '35px',
@@ -141,7 +143,7 @@ const Navigation = ({
                         <ButtonOutline
                             isDisabled={totalPages === 0}
                             icon={<HiMinus color="#AFB2B6" />}
-                            onClick={() => setScale(prev => Math.max(10, prev - 10))}
+                            onClick={decScale}
                         />
                         <input
                             disabled={totalPages === 0}
@@ -164,7 +166,7 @@ const Navigation = ({
                         <ButtonOutline
                             icon={<BsPlusLg color="#AFB2B6" />}
                             isDisabled={totalPages === 0}
-                            onClick={() => setScale(prev => Math.min(400, prev + 10))} // Max scale 400%
+                            onClick={incScale} // Max scale 400%
                         />
                     </div>
 

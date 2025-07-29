@@ -13,7 +13,8 @@ const MainWindow = React.forwardRef(({
                                          fitMode,
                                          showSidebar,
                                          setScale,
-                                         scale
+                                         scale,
+                                         imageRefs
                                      }, mainScrollContainerRef) => {
     return (
         <div
@@ -25,10 +26,10 @@ const MainWindow = React.forwardRef(({
                 scrollBehavior: 'smooth',
                 scrollSnapType: 'y proximity',
                 display: 'flex',
-                flexDirection: 'column', // Allow vertical stacking of pages
-                alignItems: 'center', // Center pages horizontally
-                paddingTop: '60px', // Offset for fixed Navbar
-                paddingBottom: '20px', // Some bottom padding
+                flexDirection: 'column',
+                alignItems: 'center',
+                paddingTop: '60px',
+                paddingBottom: '20px',
                 transform: showSidebar ? 'translateX(125px)' : 'translateX(0px)',
                 transition: 'transform 0.3s ease-in-out'
             }}
@@ -38,7 +39,7 @@ const MainWindow = React.forwardRef(({
                 files={files}
                 activePage={activePage}
                 onPageClick={scrollToPage}
-                setPageRef={setMainImageRef}
+                highlight={false}
                 type="main"
                 rotationMap={rotationMap}
                 mainWindowWidth={mainWindowWidth}
@@ -46,6 +47,7 @@ const MainWindow = React.forwardRef(({
                 fitMode={fitMode}
                 setScale={setScale}
                 scale={scale}
+                imageRefs={imageRefs}
             />
         </div>
     );

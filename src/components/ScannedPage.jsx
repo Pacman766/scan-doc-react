@@ -1,4 +1,3 @@
-// src/ScannedPage.jsx
 import React, {forwardRef} from 'react';
 import scannedPages from "./ScannedPages";
 
@@ -48,8 +47,8 @@ const ScannedPage = forwardRef(
             borderRadius: '6px',
             marginBottom: '5px',
             border: highlight ? '3px solid #0d6efd' : 'none',
-            objectFit: 'contain', // Important: maintains aspect ratio
-            maxWidth: 'unset', // Remove any restrictive max-width/height here
+            objectFit: 'contain',
+            maxWidth: 'unset',
             maxHeight: 'unset',
             transition: 'width 0.3s ease-in-out, height 0.3s ease-in-out'
         };
@@ -63,9 +62,9 @@ const ScannedPage = forwardRef(
             cursor: onClick ? 'pointer' : 'default',
             scrollSnapAlign: 'start',
             scrollMarginTop: '60px',
-            width: '100%', // Container spans full width to allow centering
+            width: '100%',
             boxSizing: 'border-box',
-            paddingLeft: type === 'main' ? '20px' : '0', // Add some horizontal padding for main images
+            paddingLeft: type === 'main' ? '20px' : '0',
             paddingRight: type === 'main' ? '20px' : '0',
         };
 
@@ -73,8 +72,8 @@ const ScannedPage = forwardRef(
         let calculatedImageHeight = 'auto';
 
         if (type === 'main') {
-            const viewportPadding = 100; // Total vertical padding/margins for image
-            const viewportHorizontalPadding = 40; // Total horizontal padding/margins for image
+            const viewportPadding = 100;
+            const viewportHorizontalPadding = 40;
 
             if (fitMode === 'height') {
                 calculatedImageHeight = `${mainWindowHeight - viewportPadding}px`;
@@ -84,25 +83,25 @@ const ScannedPage = forwardRef(
                 calculatedImageHeight = 'auto';
                 setScale(100);
             }
-        } else { // Sidebar images (thumbnails)
+        } else {
             calculatedImageWidth = '120px';
             calculatedImageHeight = 'auto';
-            // Override padding for sidebar thumbnails if necessary
             pageContainerStyle.paddingLeft = '0';
             pageContainerStyle.paddingRight = '0';
         }
 
         return (
             <div
-                ref={ref}
                 className="scanned-page-container"
                 onClick={handleClick}
                 style={pageContainerStyle}
                 data-page={file.number}
             >
                 <img
+                    className={type === 'sidebar' ? 'side-img' : 'main-img'}
                     src={file.content}
                     alt={`Page ${file.number}`}
+                    ref={ref}
                     style={{
                         ...imageStyle,
                         transform: `rotate(-${rotationMap?.[index] || 0}deg) scale(${scale / 100})`,
