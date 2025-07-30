@@ -2,62 +2,73 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 
 export const useIntersectionObserver = (
     scrollContainerRef,
-    initialActivePage,
     files,
     isZooming,
     setZooming,
     imageRefs,
 ) => {
     const observerRef = useRef(null);
-    const [activePage, setActivePage] = useState(initialActivePage);
-    let isFirstTimeObserve = false;
+    const [activePage, setActivePage] = useState(1);
+    const isPageSelectionScroll = useRef(false);
 
-    useEffect(() => {
-        isFirstTimeObserve = true;
-    }, [])
+    const onIntersection = useCallback((entries) => {
+        // console.log("INTERSECTION OBSERVED", entries);
+        if (isZooming || isPageSelectionScroll.current) return;
 
-    const onIntersection = useCallback((entries, observerRef) => {
-        if (isFirstTimeObserve){
-            setActivePage(1);
-            isFirstTimeObserve = false;
-        } else if (isZooming){
-            entries.forEach((entry, i, entrs) => {
-                if (entry.isIntersecting && imageRefs.current) {
-                    const  elements = imageRefs
-                        .filter(page => page !== null)
-                        .map(page => page?.el)
-                    let pageIndex = elements.indexOf(entry.target);
-                    if (pageIndex !== -1) {
-                        setActivePage(pageIndex+1);
-                        const selElement = document.querySelectorAll('.side-img')[pageIndex];
-                        selElement && selElement.scrollIntoView({ block: 'center'});
-                    }
+        const visible = entries
+            .filter(entry => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible.length > 0){
+            const topMost = visible[0].target;
+            const index = imageRefs.current.findIndex(
+                (ref) => ref === topMost || ref?.el === topMost
+            );
+
+            if (index !== -1){
+                const newPage = index + 1;
+                if (newPage !== activePage){
+                    setActivePage(newPage);
+                    const sideEl = document.querySelectorAll('.side-img')[index];
+                    sideEl?.scrollIntoView({ block: 'center', behavior: 'smooth' });
                 }
-            });
+            }
         }
-    }, []);
+
+    }, [isZooming, imageRefs, activePage]);
 
     useEffect(() => {
+        if (!imageRefs?.current.length || !scrollContainerRef?.current) {
+            return;
+        }
+
         observerRef.current = new IntersectionObserver(onIntersection, {
-            root: null,
-            rootMargin: '',
+            root: scrollContainerRef.current,
             threshold: 0.2
         });
 
-        if (imageRefs.current && imageRefs.current.length > 0){
-            imageRefs.current.forEach(img => {
-                const element = (img && img.el) || img;
-                if (element) {
-                    observerRef.current.observe(element);
-                }
-            });
-        }
-    }, [files, imageRefs]);
 
-    const scrollToPage = useCallback((pageIndex) => {
-        const el = imageRefs.current[pageIndex-1];
-        if (el) {
-            el.scrollIntoView({ block: 'center' });
+        imageRefs.current.forEach(ref => {
+            const el = ref?.el || ref;
+            el && observerRef.current.observe(el);
+        });
+
+        return () => {
+            observerRef.current?.disconnect();
+        };
+    }, [scrollContainerRef, imageRefs, files]);
+
+    const scrollToPage = useCallback((page) => {
+        const mainEl = imageRefs.current[page-1];
+        if (mainEl) {
+            isPageSelectionScroll.current = true;
+            mainEl.scrollIntoView({ block: 'center' });
+            const sideEl = document.querySelectorAll('.side-img')[page-1];
+            sideEl?.scrollIntoView({ block: 'center'});
+            setActivePage(page);
+            setTimeout(() => {
+                isPageSelectionScroll.current = false;
+            }, 500)
         }
     }, [imageRefs]);
 

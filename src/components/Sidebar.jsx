@@ -13,20 +13,20 @@ const Sidebar = ({
                  }) => {
     const sidebarItemRefs = useRef({});
 
-    const setSidebarItemRef = useCallback((pageNumber, el) => {
-        if (el) {
-            sidebarItemRefs.current[pageNumber] = el;
-        } else {
-            delete sidebarItemRefs.current[pageNumber]; // Clean up on unmount
-        }
-    }, []);
+    // const setSidebarItemRef = useCallback((pageNumber, el) => {
+    //     if (el) {
+    //         sidebarItemRefs.current[pageNumber] = el;
+    //     } else {
+    //         delete sidebarItemRefs.current[pageNumber]; // Clean up on unmount
+    //     }
+    // }, []);
 
     useEffect(() => {
-        const ref = sidebarItemRefs.current[activePage];
+        const ref = sidebarItemRefs.current[activePage-1];
         if (ref) {
             ref.scrollIntoView({ behavior: "smooth", block: "center" });
         }
-    }, [activePage]); // Rerun when activePage changes
+    }, [activePage]);
 
     return (
         <>
@@ -50,7 +50,6 @@ const Sidebar = ({
                             activePage={activePage}
                             onPageClick={scrollToPage}
                             highlightActive={true}
-                            setPageRef={setSidebarItemRef}
                             type="sidebar"
                             rotationMap={rotationMap}
                         />

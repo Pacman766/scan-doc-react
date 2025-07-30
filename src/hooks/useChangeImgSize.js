@@ -7,6 +7,10 @@ export const useChangeImgSize = (mainScrollContainerRef, setZooming) => {
     const [mainWindowWidth, setMainWindowWidth] = useState(0);
     const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
 
+    const markZooming = useCallback(() => {
+        setZooming(true);
+        setTimeout(() => setZooming(false), 200);
+    }, [setZooming]);
 
     const toggleFitMode = useCallback(() => {
         setFitMode(prevMode => {
@@ -17,12 +21,14 @@ export const useChangeImgSize = (mainScrollContainerRef, setZooming) => {
                 return FIT_MODE.HEIGHT;
             }
         });
+        markZooming();
 
-    }, []);
+    }, [markZooming]);
 
     const handleScaleChange = useCallback((newScale) => {
         setScale(newScale);
-    }, []);
+        markZooming();
+    }, [markZooming]);
 
     /**
      * Обновление размера картинок в основном окне по кнопке "По размеру страницы"
@@ -41,12 +47,12 @@ export const useChangeImgSize = (mainScrollContainerRef, setZooming) => {
 
     const incScale = () => {
         setScale(prev => Math.min(400, prev + 10));
-        setZooming(true);
+        markZooming();
     }
 
     const decScale = () => {
         setScale(prev => Math.max(10, prev - 10));
-        setZooming(true);
+        markZooming();
     }
 
 

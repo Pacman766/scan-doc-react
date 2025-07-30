@@ -7,7 +7,6 @@ const ScannedPages = ({
                           activePage,
                           onPageClick,
                           highlightActive,
-                          setPageRef,
                           type,
                           rotationMap,
                           mainWindowHeight,
@@ -34,9 +33,9 @@ const ScannedPages = ({
                     highlight={highlightActive && activePage === file.number}
                     type={type}
                     rotationMap={rotationMap}
+                    fitMode={fitMode}
                     mainWindowHeight={mainWindowHeight}
                     mainWindowWidth={mainWindowWidth}
-                    fitMode={fitMode}
                     setScale={setScale}
                     scale={scale}
                     ref={(el) => {

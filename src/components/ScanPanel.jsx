@@ -31,12 +31,9 @@ const ScanPanel = () => {
     const {
         activePage,
         setActivePage,
-        // setObservedElementRef,
-        // setMainImageRef,
         scrollToPage
     } = useIntersectionObserver(
         mainScrollContainerRef,
-        1,
         files,
         isZooming,
         setZooming,
@@ -94,11 +91,11 @@ const ScanPanel = () => {
         getConfig();
     }, []);
 
-    useEffect(() => {
-        return () => {
-            imageRefs.current = []
-        }
-    }, [files]);
+    // useEffect(() => {
+    //     return () => {
+    //         imageRefs.current = []
+    //     }
+    // }, [files]);
 
     return (
         <div className="dark-mode">

@@ -46,10 +46,9 @@ export const useConfig = () => {
 
     return {
         config,
-        scanners,
-        setConfig,
         getScanners,
         getConfig,
+        scanners,
         saveConfig,
     };
 };
