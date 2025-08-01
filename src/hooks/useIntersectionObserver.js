@@ -27,11 +27,9 @@ export const useIntersectionObserver = (
 
             if (index !== -1){
                 const newPage = index + 1;
-                if (newPage !== activePage){
-                    setActivePage(newPage);
-                    const sideEl = document.querySelectorAll('.side-img')[index];
-                    sideEl?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                }
+                setActivePage(newPage);
+                const sideEl = document.querySelectorAll('.side-img')[index];
+                sideEl?.scrollIntoView({ block: 'center', behavior: 'smooth' });
             }
         }
 
