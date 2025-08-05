@@ -1,5 +1,6 @@
-import React, {forwardRef} from 'react';
+import React, {forwardRef, useCallback} from 'react';
 import scannedPages from "./ScannedPages";
+import {useScanContext} from "../context/ScanContext";
 
 const ScannedPage = forwardRef(
     ({
@@ -8,14 +9,17 @@ const ScannedPage = forwardRef(
          onClick,
          highlight,
          type,
-         rotationMap,
-         fitMode,
-         mainWindowHeight,
-         mainWindowWidth,
-         setScale,
-         scale,
          onImageLoad
      }, ref) => {
+
+        const {
+            rotationMap,
+            fitMode,
+            mainWindowHeight,
+            mainWindowWidth,
+            setScale,
+            scale,
+        } = useScanContext();
 
         const handleClick = () => {
             if (onClick) {
@@ -23,72 +27,55 @@ const ScannedPage = forwardRef(
             }
         };
 
-        onImageLoad=(naturalWidth, naturalHeight) => {
-            if (type === 'main') {
-                const rotation = rotationMap?.[index] || 0;
-                let scaleValue = 100;
+        const handleImageLoad = useCallback((naturalWidth, naturalHeight) => {
+            if (type !== 'main') return;
 
-                if (fitMode === 'height') {
-                    const imageDisplayHeight = mainWindowHeight - 100;
-                    const baseHeight = (rotation % 180 === 0) ? naturalHeight : naturalWidth;
-                    scaleValue = Math.round((imageDisplayHeight / baseHeight) * 100);
-                } else if (fitMode === 'width') {
-                    const imageDisplayWidth = mainWindowWidth - 340;
-                    const baseWidth = (rotation % 180 === 0) ? naturalWidth : naturalHeight;
-                    scaleValue = Math.round((imageDisplayWidth / baseWidth) * 100);
-                }
+            const rotation = rotationMap?.[index] || 0;
+            let newScale = 100;
 
-                setScale(scaleValue);
+            if (fitMode === 'height') {
+                const displayHeight = mainWindowHeight - 100;
+                const baseHeight = rotation % 180 === 0 ? naturalHeight : naturalWidth;
+                newScale = Math.round((displayHeight / baseHeight) * 100);
+            } else if (fitMode === 'width') {
+                const displayWidth = mainWindowWidth - 340;
+                const baseWidth = rotation % 180 === 0 ? naturalWidth : naturalHeight;
+                newScale = Math.round((displayWidth / baseWidth) * 100);
             }
-        }
+            setScale(newScale);
+        }, [fitMode]);
 
 
-        const imageStyle = {
-            borderRadius: '6px',
-            marginBottom: '5px',
-            border: highlight ? '3px solid #0d6efd' : 'none',
-            objectFit: 'contain',
-            maxWidth: 'unset',
-            maxHeight: 'unset',
-            transition: 'width 0.3s ease-in-out, height 0.3s ease-in-out'
-        };
-
-        const pageContainerStyle = {
-            marginBottom: '30px',
+        const wrapperStyle = {
+            transform: type === 'main' ? `scale(${scale / 100})` : 'none',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'end',
-            cursor: onClick ? 'pointer' : 'default',
-            scrollSnapAlign: 'start',
-            scrollMarginTop: '60px',
+            justifyContent: 'center',
+            transformOrigin: 'center top', // ✅ avoid shifting
             width: '100%',
-            boxSizing: 'border-box',
-            paddingLeft: type === 'main' ? '20px' : '0',
-            paddingRight: type === 'main' ? '20px' : '0',
         };
 
-        let calculatedImageWidth = 'auto';
-        let calculatedImageHeight = 'auto';
+        const imgStyle = {
+            maxWidth: '100%',
+            maxHeight: '100%',
+            transform: `rotate(${rotationMap?.[index] || 0}deg)`,
+            width: type === 'sidebar' ? '120px' : 'auto',
+            borderRadius: '6px',
+            border: highlight ? '3px solid #0d6efd' : 'none',
+            objectFit: 'contain',
+            // transition: 'transform 0.3s ease, width 0.3s ease, height 0.3s ease',
+        };
 
-        if (type === 'main') {
-            const viewportPadding = 100;
-            const viewportHorizontalPadding = 40;
-
-            if (fitMode === 'height') {
-                calculatedImageHeight = `${mainWindowHeight - viewportPadding}px`;
-                calculatedImageWidth = 'auto';
-            } else if (fitMode === 'width') {
-                calculatedImageWidth = `${mainWindowWidth - viewportHorizontalPadding-300}px`;
-                calculatedImageHeight = 'auto';
-                setScale(100);
-            }
-        } else {
-            calculatedImageWidth = '120px';
-            calculatedImageHeight = 'auto';
-            pageContainerStyle.paddingLeft = '0';
-            pageContainerStyle.paddingRight = '0';
-        }
+        const pageContainerStyle = {
+            marginBottom: '1rem',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            scrollSnapAlign: 'start',
+            scrollMarginTop: '60px',
+            cursor: onClick ? 'pointer' : 'default',
+        };
 
         return (
             <div
@@ -97,25 +84,15 @@ const ScannedPage = forwardRef(
                 style={pageContainerStyle}
                 data-page={file.number}
             >
-                <img
-                    className={type === 'sidebar' ? 'side-img' : 'main-img'}
-                    src={file.content}
-                    alt={`Page ${file.number}`}
-                    ref={ref}
-                    style={{
-                        ...imageStyle,
-                        transform: `rotate(-${rotationMap?.[index] || 0}deg) scale(${scale / 100})`,
-                        width: calculatedImageWidth,
-                        height: calculatedImageHeight,
-                    }}
-                    onLoad={(e) => {
-                        if (onImageLoad) {
-                            const img = e.target;
-                            onImageLoad(img.naturalWidth, img.naturalHeight);
-                        }
-                    }}
-                />
-                {type === 'sidebar' ? file.number : ''}
+                <div className="img-wrapper" style={wrapperStyle}>
+                    <img
+                        src={file.content}
+                        alt={`Page ${file.number}`}
+                        ref={ref}
+                        style={imgStyle}
+                        className={type === 'sidebar' ? 'side-img' : 'main-img'}
+                    />
+                </div>
             </div>
         );
     }

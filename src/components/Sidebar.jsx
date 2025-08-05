@@ -2,16 +2,15 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { Offcanvas } from "react-bootstrap";
 import ScannedPages from "./ScannedPages";
+import {useScanContext} from "../context/ScanContext";
 
 const Sidebar = ({
                      showSidebar,
                      toggleSidebar,
-                     files,
-                     activePage,
                      scrollToPage,
-                     rotationMap
                  }) => {
     const sidebarItemRefs = useRef({});
+    const {files, activePage} = useScanContext();
 
     // const setSidebarItemRef = useCallback((pageNumber, el) => {
     //     if (el) {
@@ -46,12 +45,9 @@ const Sidebar = ({
                     <div className="d-flex flex-column align-items-center gap-3"
                          style={{ overflowY: 'auto', marginTop: '30px' }}>
                         <ScannedPages
-                            files={files}
-                            activePage={activePage}
                             onPageClick={scrollToPage}
                             highlightActive={true}
                             type="sidebar"
-                            rotationMap={rotationMap}
                         />
                     </div>
                 </Offcanvas.Body>

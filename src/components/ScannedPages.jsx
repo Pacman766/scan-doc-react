@@ -1,50 +1,57 @@
-// src/ScannedPages.jsx
 import React from 'react';
 import ScannedPage from "./ScannedPage";
+import {useScanContext} from "../context/ScanContext";
 
 const ScannedPages = ({
-                          files,
-                          activePage,
                           onPageClick,
                           highlightActive,
-                          type,
-                          rotationMap,
-                          mainWindowHeight,
-                          mainWindowWidth,
-                          fitMode,
-                          setScale,
-                          scale,
-                          imageRefs
+                          type
                       }) => {
+    const {
+        files,
+        activePage,
+        imageRefs,
+        rotationMap,
+        scale
+    } = useScanContext();
+
+    const scrollableContainerStyle = {
+        width: '100%',
+        height: '100%',
+        overflowY: 'auto',
+        overflowX: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    };
+
+    const pagesWrapperStyle = {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: '1rem',
+    };
+
     return (
-        <div style={{
-            flex: 1,
-            marginTop: type === 'sidebar' ? '0' : '0px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-        }}>
-            {files.map((file, index) => (
-                <ScannedPage
-                    key={file.number}
-                    file={file}
-                    index={index}
-                    onClick={() => onPageClick?.(file.number)}
-                    highlight={highlightActive && activePage === file.number}
-                    type={type}
-                    rotationMap={rotationMap}
-                    fitMode={fitMode}
-                    mainWindowHeight={mainWindowHeight}
-                    mainWindowWidth={mainWindowWidth}
-                    setScale={setScale}
-                    scale={scale}
-                    ref={(el) => {
-                        if (imageRefs?.current) {
-                            imageRefs.current[index] = el;
-                        }
-                    }}
-                />
-            ))}
+        <div style={scrollableContainerStyle}>
+            <div style={pagesWrapperStyle}>
+                {files.map((file, index) => (
+                    <ScannedPage
+                        key={file.number}
+                        file={file}
+                        index={index}
+                        onClick={() => onPageClick?.(file.number)}
+                        highlight={highlightActive && activePage === file.number}
+                        type={type}
+                        ref={(el) => {
+                            if (imageRefs?.current) {
+                                imageRefs.current[index] = el;
+                            }
+                        }}
+                    />
+                ))}
+            </div>
         </div>
     );
 };

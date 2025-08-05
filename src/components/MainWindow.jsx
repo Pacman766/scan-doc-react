@@ -1,21 +1,22 @@
-// src/MainWindow.jsx
 import React from 'react';
 import ScannedPages from "./ScannedPages";
+import {useScanContext} from "../context/ScanContext";
 
 const MainWindow = React.forwardRef(({
-                                         files,
-                                         activePage,
                                          scrollToPage,
-                                         setMainImageRef,
-                                         rotationMap,
-                                         mainWindowWidth,
-                                         mainWindowHeight,
-                                         fitMode,
                                          showSidebar,
-                                         setScale,
-                                         scale,
-                                         imageRefs
                                      }, mainScrollContainerRef) => {
+    const {
+        files,
+        activePage,
+        rotationMap,
+        mainWindowWidth,
+        mainWindowHeight,
+        fitMode,
+        setScale,
+        scale,
+        imageRefs
+    } = useScanContext();
     return (
         <div
             ref={mainScrollContainerRef}

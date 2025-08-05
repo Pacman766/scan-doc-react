@@ -14,26 +14,26 @@ import { MdOutlineRotate90DegreesCcw } from 'react-icons/md';
 import { CiPlay1 } from 'react-icons/ci';
 import { IoSaveOutline, IoSettingsOutline } from 'react-icons/io5';
 import {AiOutlineColumnWidth, AiOutlineColumnHeight} from "react-icons/ai";
+import {useScanContext} from "../context/ScanContext";
 
 const Navigation = ({
                         toggleSidebar,
                         onScan,
                         totalPages,
-                        activePage,
                         scrollToPage,
                         handleDeletePage,
                         handleRotatePage,
-                        scale,
-                        setScale,
                         handleFitMode,
-                        fitMode,
                         config,
                         getScanners,
                         scanners,
                         saveConfig,
                         incScale,
-                        decScale
+                        decScale,
+                        handleScaleChange
                     }) => {
+    const {activePage, scale, fitMode} = useScanContext();
+
     const [pageInputValue, setPageInputValue] = useState(String(activePage));
     const [showTooltip, setShowTooltip] = useState(false);
     const pageInputRef = useRef(null);
@@ -149,7 +149,7 @@ const Navigation = ({
                             disabled={totalPages === 0}
                             type="text"
                             value={scale + '%'}
-                            onChange={(e) => setScale(e.target.value.replace(/\D/, ''))}
+                            onChange={(e) => handleScaleChange(e.target.value.replace(/\D/, ''))}
                             style={{
                                 width: '45px',
                                 height: '30px',

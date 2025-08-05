@@ -1,6 +1,9 @@
 import {useCallback} from "react";
+import {useScanContext} from "../context/ScanContext";
 
-export const useScanFiles = (files, setFiles, setLoading, activePage, setActivePage, scrollToPage) => {
+export const useScanFiles = (setLoading, scrollToPage) => {
+    const {files, setFiles, activePage, setActivePage} = useScanContext();
+
     const scan = (config) => {
         if (!window.IsidaImageScanning) {
             console.warn('IsidaImageScanning is not available');

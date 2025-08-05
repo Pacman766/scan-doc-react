@@ -2,11 +2,12 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Navigation from "./Navigation";
 import Sidebar from "./Sidebar";
 import MainWindow from "./MainWindow";
-import {useIntersectionObserver} from "../hooks/useIntersection";
+import {useIntersectionObserver} from "../hooks/useIntersectionObserver";
 import {useChangeImgSize} from "../hooks/useChangeImgSize";
 import {AiOutlineColumnWidth} from "react-icons/ai";
 import {useConfig} from "../hooks/useConfig";
 import {useScanFiles} from "../hooks/useScanFiles"
+import {useScanContext} from "../context/ScanContext";
 
 
 const ScanPanel = () => {
@@ -17,46 +18,34 @@ const ScanPanel = () => {
         {number: 4, type: 'jpg', content: 'jpg/api_page-0004.jpg'}
     ];
 
-    const [files, setFiles] = useState([]);
-    const [showSidebar, setShowSidebar] = useState(true);
-    const [rotationMap, setRotationMap] = useState({});
-    const [loading, setLoading] = useState(false);
-    const [isZooming, setZooming] = useState(false);
-
-    const mainScrollContainerRef = useRef(null);
-    const imageRefs = useRef([]);
-
-    const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
-
     const {
         activePage,
         setActivePage,
-        scrollToPage
-    } = useIntersectionObserver(
-        mainScrollContainerRef,
         files,
+        setFiles,
+        scrollContainerRef,
         isZooming,
         setZooming,
-        imageRefs
-    );
-    const {
-        toggleFitMode,
-        handleScaleChange,
-        scale,
-        setScale,
+        rotationMap,
+        setRotationMap,
+        imageRefs,
         fitMode,
         setFitMode,
+        scale,
+        setScale,
         mainWindowHeight,
-        setMainWindowHeight,
         mainWindowWidth,
-        setMainWindowWidth,
-        incScale,
-        decScale
-    } = useChangeImgSize(mainScrollContainerRef, setZooming);
+        mainScrollContainerRef
+    } =  useScanContext();
 
+    const [showSidebar, setShowSidebar] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
+
+    const {scrollToPage} = useIntersectionObserver();
+    const {toggleFitMode, handleScaleChange, incScale, decScale} = useChangeImgSize();
     const {config, getScanners, getConfig, scanners, saveConfig} = useConfig();
-
-    const {scan, handleDeletePage} = useScanFiles(files, setFiles, setLoading, activePage, setActivePage, scrollToPage);
+    const {scan, handleDeletePage} = useScanFiles( setLoading, scrollToPage);
 
     const toggleSidebar = () => {
         setShowSidebar(!showSidebar);
@@ -91,26 +80,17 @@ const ScanPanel = () => {
         getConfig();
     }, []);
 
-    // useEffect(() => {
-    //     return () => {
-    //         imageRefs.current = []
-    //     }
-    // }, [files]);
-
     return (
         <div className="dark-mode">
             <Navigation
                 toggleSidebar={toggleSidebar}
                 onScan={handleScan}
                 totalPages={files?.length}
-                activePage={activePage}
                 scrollToPage={scrollToPage}
                 handleDeletePage={handleDeletePage}
                 handleRotatePage={handleRotatePage}
-                scale={scale}
-                setScale={handleScaleChange}
+                handleScaleChange={handleScaleChange}
                 handleFitMode={toggleFitMode}
-                fitMode={fitMode}
                 scanners={scanners}
                 config={config}
                 getScanners={getScanners}
@@ -124,22 +104,10 @@ const ScanPanel = () => {
                 files={files}
                 activePage={activePage}
                 scrollToPage={scrollToPage}
-                rotationMap={rotationMap}
             />
             <MainWindow
-                files={files}
-                activePage={activePage}
                 scrollToPage={scrollToPage}
-                // setMainImageRef={setMainImageRef}
-                ref={mainScrollContainerRef}
-                rotationMap={rotationMap}
-                fitMode={fitMode}
-                mainWindowHeight={mainWindowHeight}
-                mainWindowWidth={mainWindowWidth}
-                setScale={setScale}
-                scale={scale}
                 showSidebar={showSidebar}
-                imageRefs={imageRefs}
             />
         </div>
     );

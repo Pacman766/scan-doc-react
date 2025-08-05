@@ -1,10 +1,20 @@
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useContext, useEffect, useState} from "react";
+import {useScanContext} from "../context/ScanContext";
 
-export const useChangeImgSize = (mainScrollContainerRef, setZooming) => {
-    const [scale, setScale] = useState(100);
-    const [fitMode, setFitMode] = useState('height');
-    const [mainWindowHeight, setMainWindowHeight] = useState(0);
-    const [mainWindowWidth, setMainWindowWidth] = useState(0);
+export const useChangeImgSize = () => {
+    const {
+        scrollContainerRef,
+        scale,
+        setScale,
+        fitMode,
+        setFitMode,
+        mainWindowHeight,
+        setMainWindowHeight,
+        mainWindowWidth,
+        setMainWindowWidth,
+        setZooming,
+        mainScrollContainerRef
+    } = useScanContext();
     const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
 
     const markZooming = useCallback(() => {
@@ -15,15 +25,17 @@ export const useChangeImgSize = (mainScrollContainerRef, setZooming) => {
     const toggleFitMode = useCallback(() => {
         setFitMode(prevMode => {
             if (prevMode === FIT_MODE.HEIGHT) {
+                setScale(40);
                 return FIT_MODE.WIDTH;
             }
             if (prevMode === FIT_MODE.WIDTH) {
+                setScale(100);
                 return FIT_MODE.HEIGHT;
             }
         });
         markZooming();
 
-    }, [markZooming]);
+    }, []);
 
     const handleScaleChange = useCallback((newScale) => {
         setScale(newScale);
@@ -34,16 +46,16 @@ export const useChangeImgSize = (mainScrollContainerRef, setZooming) => {
      * Обновление размера картинок в основном окне по кнопке "По размеру страницы"
      */
     useEffect(() => {
-        if (mainScrollContainerRef.current) {
+        if (scrollContainerRef.current) {
             const updateSize = () => {
-                setMainWindowHeight(mainScrollContainerRef.current.clientHeight);
-                setMainWindowWidth(mainScrollContainerRef.current.clientWidth);
+                setMainWindowHeight(scrollContainerRef.current.clientHeight);
+                setMainWindowWidth(scrollContainerRef.current.clientWidth);
             };
             updateSize();
             window.addEventListener('resize', updateSize);
             return () => window.removeEventListener('resize', updateSize);
         }
-    }, []);
+    }, [scrollContainerRef]);
 
     const incScale = () => {
         setScale(prev => Math.min(400, prev + 10));
@@ -59,14 +71,6 @@ export const useChangeImgSize = (mainScrollContainerRef, setZooming) => {
     return {
         toggleFitMode,
         handleScaleChange,
-        scale,
-        setScale,
-        fitMode,
-        setFitMode,
-        mainWindowHeight,
-        setMainWindowHeight,
-        mainWindowWidth,
-        setMainWindowWidth,
         incScale,
         decScale
     }

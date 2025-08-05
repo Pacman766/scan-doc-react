@@ -1,14 +1,17 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
+import {useRef, useEffect, useCallback, useState, useContext} from 'react';
+import {useScanContext} from "../context/ScanContext";
 
-export const useIntersectionObserver = (
-    scrollContainerRef,
-    files,
-    isZooming,
-    setZooming,
-    imageRefs,
-) => {
+export const useIntersectionObserver = () => {
+    const {
+        scrollContainerRef,
+        files,
+        isZooming,
+        setZooming,
+        imageRefs,
+        activePage,
+        setActivePage,
+    } = useScanContext();
     const observerRef = useRef(null);
-    const [activePage, setActivePage] = useState(1);
     const isPageSelectionScroll = useRef(false);
 
     const onIntersection = useCallback((entries) => {
@@ -70,5 +73,5 @@ export const useIntersectionObserver = (
         }
     }, [imageRefs]);
 
-    return { activePage, setActivePage, scrollToPage };
+    return { scrollToPage };
 };
