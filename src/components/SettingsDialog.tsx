@@ -3,35 +3,46 @@ import {Modal, Row, Col, Form} from 'react-bootstrap';
 import ButtonDefault from './buttonDefault/ButtonDefault';
 import SettingsDropdown from './settingsDropdown/SettingsDropdown';
 import {IoSettingsOutline} from "react-icons/io5";
+import type {SettingsDialogProps} from "../types/settingsDialog";
+import type {Scanner} from "../types/scanner";
+import {Config, defaultTempConfig} from "../types/config";
 
-const SettingsDialog = ({getScanners, scanners, config, saveConfig }) => {
+
+const SettingsDialog = (
+    {getScanners, config, saveConfig }:
+        SettingsDialogProps
+) => {
+
     const [settingsShow, setSettingsShow] = useState(false);
-    const [tempConfig, setTempConfig] = useState({});
-    const [scannerNames, setScannerNames] = useState([]);
+    const [tempConfig, setTempConfig] = useState<Config>(defaultTempConfig);
+    const [scannerNames, setScannerNames] = useState<string[]>([]);
     const resolutionOptions = [100, 200, 300, 400, 500];
     const colorOptions = ["Оттенки серого", "Цветной", "Черно-белый"];
-    const [tempSelectedColor, setTempSelectedColor] = useState('');
+    const [tempSelectedColor, setTempSelectedColor] = useState<string>('');
     const colorMapping = {
         bw: 'Черно-белый',
         gray: 'Оттенки серого',
         rgb: 'Цветной'
     };
-    const reverseColorMapping = {
+    const reverseColorMapping: Record<string, 'bw' | 'gray' | 'rgb'> = {
         'Черно-белый': 'bw',
         'Оттенки серого': 'gray',
         'Цветной': 'rgb'
     };
 
     useEffect(() => {
-        setTempConfig(config);
+        if (config){
+            setTempConfig(config);
+        }
     }, [config]);
 
-
     const openSettingsWindow = async () => {
-        const scannersList = await getScanners();
+        const scannersList: Scanner[] | undefined = await getScanners();
         setScannerNames(scannersList.map(s => s.scannerName));
-        setTempConfig(config);
-        setTempSelectedColor(colorMapping[config.color]);
+        if (config){
+            setTempConfig(config);
+            setTempSelectedColor(colorMapping[config.color]);
+        }
         setSettingsShow(true);
     };
 
@@ -55,7 +66,7 @@ const SettingsDialog = ({getScanners, scanners, config, saveConfig }) => {
             <Modal
                 show={settingsShow}
                 onHide={closeSettingsWindow}
-                size="md"
+                size="lg"
                 centered
                 bg="dark"
                 data-bs-theme="dark"
@@ -84,7 +95,7 @@ const SettingsDialog = ({getScanners, scanners, config, saveConfig }) => {
                             <SettingsDropdown
                                 title="Разрешение"
                                 data={resolutionOptions}
-                                selected={tempConfig.dpi}
+                                selected={tempConfig?.dpi}
                                 onSelect={(value) => setTempConfig(prev => ({
                                     ...prev,
                                     dpi: value

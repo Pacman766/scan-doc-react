@@ -1,12 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Container, Navbar, OverlayTrigger, Tooltip } from 'react-bootstrap';
-// Assuming you have these custom components
 import ButtonOutline from './buttonOutline/ButtonOutline';
 import ButtonDefault from './buttonDefault/ButtonDefault';
 import VerticalSeparator from './VerticalSeparator';
 import SettingsDialog from './SettingsDialog';
 
-// Import icons
 import { RxHamburgerMenu, RxCross1 } from 'react-icons/rx';
 import { HiMinus } from 'react-icons/hi';
 import { BsPlusLg } from 'react-icons/bs';
@@ -15,34 +13,33 @@ import { CiPlay1 } from 'react-icons/ci';
 import { IoSaveOutline, IoSettingsOutline } from 'react-icons/io5';
 import {AiOutlineColumnWidth, AiOutlineColumnHeight} from "react-icons/ai";
 import {useScanContext} from "../context/ScanContext";
+import type {NavigationProps} from "../types/navigation";
 
 const Navigation = ({
                         toggleSidebar,
                         onScan,
                         totalPages,
-                        scrollToPage,
                         handleDeletePage,
                         handleRotatePage,
                         handleFitMode,
                         config,
                         getScanners,
-                        scanners,
                         saveConfig,
                         incScale,
                         decScale,
                         handleScaleChange
-                    }) => {
+                    }: NavigationProps) => {
     const {activePage, scale, fitMode} = useScanContext();
 
     const [pageInputValue, setPageInputValue] = useState(String(activePage));
     const [showTooltip, setShowTooltip] = useState(false);
-    const pageInputRef = useRef(null);
+    const pageInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         setPageInputValue(String(activePage));
     }, [activePage]);
 
-    const handlePageInputChange = (e) => {
+    const handlePageInputChange = (e:  React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         if (value === '' || /^\d+$/.test(value)) {
             setPageInputValue(value);
@@ -70,7 +67,7 @@ const Navigation = ({
         setShowTooltip(true);
     };
 
-    const renderPageTooltip = (props) => (
+    const renderPageTooltip = (props: object) => (
         <Tooltip id="page-input-tooltip" {...props}>
             Enter page number
         </Tooltip>
@@ -107,7 +104,7 @@ const Navigation = ({
                             placement="bottom"
                             overlay={renderPageTooltip}
                             show={showTooltip}
-                            container={pageInputRef.current?.offsetParent || document.body}
+                            container={(pageInputRef.current?.offsetParent as HTMLElement) || document.body}
                         >
                             <input
                                 ref={pageInputRef}
@@ -149,7 +146,7 @@ const Navigation = ({
                             disabled={totalPages === 0}
                             type="text"
                             value={scale + '%'}
-                            onChange={(e) => handleScaleChange(e.target.value.replace(/\D/, ''))}
+                            onChange={(e) => handleScaleChange(Number(e.target.value.replace(/\D/, '')))}
                             style={{
                                 width: '45px',
                                 height: '30px',
@@ -199,7 +196,6 @@ const Navigation = ({
             <SettingsDialog
                 config={config}
                 getScanners={getScanners}
-                scanners={scanners}
                 saveConfig={saveConfig}
             />
         </Navbar>

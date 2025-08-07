@@ -1,21 +1,20 @@
 import React from 'react';
 import ScannedPage from "./ScannedPage";
 import {useScanContext} from "../context/ScanContext";
+import type {ScannedPagesProps} from "../types/scannedPages"
 
 const ScannedPages = ({
                           onPageClick,
                           highlightActive,
                           type
-                      }) => {
+                      }: ScannedPagesProps) => {
     const {
         files,
         activePage,
         imageRefs,
-        rotationMap,
-        scale
     } = useScanContext();
 
-    const scrollableContainerStyle = {
+    const scrollableContainerStyle: React.CSSProperties = {
         width: '100%',
         height: '100%',
         overflowY: 'auto',
@@ -25,7 +24,7 @@ const ScannedPages = ({
         alignItems: 'center',
     };
 
-    const pagesWrapperStyle = {
+    const pagesWrapperStyle: React.CSSProperties = {
         width: '100%',
         display: 'flex',
         flexDirection: 'column',

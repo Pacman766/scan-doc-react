@@ -1,22 +1,17 @@
-import React from 'react';
+import React, {ForwardedRef} from 'react';
 import ScannedPages from "./ScannedPages";
 import {useScanContext} from "../context/ScanContext";
 
-const MainWindow = React.forwardRef(({
+interface MainWindowProps {
+    scrollToPage: (page: number) => void;
+    showSidebar: boolean;
+}
+
+const MainWindow = React.forwardRef<HTMLDivElement, MainWindowProps>(({
                                          scrollToPage,
                                          showSidebar,
-                                     }, mainScrollContainerRef) => {
-    const {
-        files,
-        activePage,
-        rotationMap,
-        mainWindowWidth,
-        mainWindowHeight,
-        fitMode,
-        setScale,
-        scale,
-        imageRefs
-    } = useScanContext();
+                                     }, mainScrollContainerRef: ForwardedRef<HTMLDivElement>) => {
+
     return (
         <div
             ref={mainScrollContainerRef}
@@ -37,18 +32,9 @@ const MainWindow = React.forwardRef(({
             className="main-window-scroll-container"
         >
             <ScannedPages
-                files={files}
-                activePage={activePage}
                 onPageClick={scrollToPage}
                 highlightActive={false}
                 type="main"
-                rotationMap={rotationMap}
-                mainWindowWidth={mainWindowWidth}
-                mainWindowHeight={mainWindowHeight}
-                fitMode={fitMode}
-                setScale={setScale}
-                scale={scale}
-                imageRefs={imageRefs}
             />
         </div>
     );

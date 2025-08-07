@@ -1,10 +1,19 @@
 import React from 'react';
 import { Dropdown } from "react-bootstrap";
 
-const SettingsDropdown = ({ title, data = [], selected, onSelect }) => {
-    const handleSelect = (eventKey) => {
-        onSelect(eventKey);
-    };
+interface SettingsDropdown {
+    title: string;
+    data: number[] | string[];
+    selected: string | number | undefined;
+    onSelect: (value: string) => void
+}
+
+const SettingsDropdown: React.FC<SettingsDropdown> = ({ title, data = [], selected, onSelect }) => {
+    const handleSelect = (eventKey: string | null) => {
+        if (eventKey){
+            onSelect(eventKey);
+        }
+    }
 
     return (
         <Dropdown onSelect={handleSelect} data-bs-theme="dark">

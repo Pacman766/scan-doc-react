@@ -1,21 +1,23 @@
 import {useState} from 'react';
 import axios from 'axios';
+import type {Scanner} from '../types/scanner'
+import {Config, defaultTempConfig} from "../types/config";
 
 export const useConfig = () => {
-    const [config, setConfig] = useState({});
-    const [scanners, setScanners] = useState([]);
+    const [config, setConfig] = useState<Config>(defaultTempConfig);
+    const [scanners, setScanners] = useState<Scanner[]>([]);
 
-    const getScanners = async () => {
+    const getScanners = async (): Promise<Scanner[]> => {
         if (!window.IsidaImageScanning) {
             console.warn('IsidaImageScanning is not available');
-            return;
+            return [];
         }
 
         try {
             const result = await window.IsidaImageScanning.getScannersList();
             setScanners(result.scanners);
             return result.scanners;
-        } catch (e) {
+        } catch (e: any) {
             console.log(e.status?.description || e.message);
             return [];
         }
@@ -31,7 +33,7 @@ export const useConfig = () => {
         }
     }
 
-    const saveConfig = async (newConfig) => {
+    const saveConfig = async (newConfig: Config) => {
         try {
             const response = await axios.put('/portal/rs/scan/config/save', newConfig);
             if (response.status === 200) {

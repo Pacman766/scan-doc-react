@@ -8,39 +8,25 @@ import {AiOutlineColumnWidth} from "react-icons/ai";
 import {useConfig} from "../hooks/useConfig";
 import {useScanFiles} from "../hooks/useScanFiles"
 import {useScanContext} from "../context/ScanContext";
+import {data} from "../utils/Files";
 
+const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'} as const;
 
-const ScanPanel = () => {
-    const data = [
-        {number: 1, type: 'jpg', content: 'jpg/api_page-0001.jpg'},
-        {number: 2, type: 'jpg', content: 'jpg/api_page-0002.jpg'},
-        {number: 3, type: 'jpg', content: 'jpg/api_page-0003.jpg'},
-        {number: 4, type: 'jpg', content: 'jpg/api_page-0004.jpg'}
-    ];
-
+const ScanPanel: React.FC = () => {
     const {
         activePage,
         setActivePage,
         files,
         setFiles,
-        scrollContainerRef,
-        isZooming,
-        setZooming,
         rotationMap,
         setRotationMap,
-        imageRefs,
-        fitMode,
         setFitMode,
-        scale,
         setScale,
-        mainWindowHeight,
-        mainWindowWidth,
         mainScrollContainerRef
     } =  useScanContext();
 
     const [showSidebar, setShowSidebar] = useState(true);
     const [loading, setLoading] = useState(false);
-    const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'};
 
     const {scrollToPage} = useIntersectionObserver();
     const {toggleFitMode, handleScaleChange, incScale, decScale} = useChangeImgSize();
@@ -62,7 +48,7 @@ const ScanPanel = () => {
         setScale(100);
     };
 
-    const handleRotatePage = (index) => {
+    const handleRotatePage = (index: number) => {
         const newDegree = (rotationMap[index] || 0) + 90;
 
         setRotationMap(prev => ({
@@ -101,13 +87,12 @@ const ScanPanel = () => {
             <Sidebar
                 showSidebar={showSidebar}
                 toggleSidebar={toggleSidebar}
-                files={files}
-                activePage={activePage}
                 scrollToPage={scrollToPage}
             />
             <MainWindow
                 scrollToPage={scrollToPage}
                 showSidebar={showSidebar}
+                ref={mainScrollContainerRef}
             />
         </div>
     );

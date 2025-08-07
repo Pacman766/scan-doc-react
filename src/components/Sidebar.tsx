@@ -1,15 +1,16 @@
-// src/Sidebar.jsx
 import React, { useEffect, useRef, useCallback } from 'react';
 import { Offcanvas } from "react-bootstrap";
 import ScannedPages from "./ScannedPages";
 import {useScanContext} from "../context/ScanContext";
+import type {SidebarProps} from "../types/sidebar";
+
 
 const Sidebar = ({
                      showSidebar,
                      toggleSidebar,
                      scrollToPage,
-                 }) => {
-    const sidebarItemRefs = useRef({});
+                 }: SidebarProps) => {
+    const sidebarItemRefs = useRef<(HTMLImageElement | null)[]>([]);
     const {files, activePage} = useScanContext();
 
     // const setSidebarItemRef = useCallback((pageNumber, el) => {
@@ -39,7 +40,7 @@ const Sidebar = ({
                 backdrop={false}
                 scroll={true}
             >
-                <Offcanvas.Header bg="dark" data-bs-theme="dark">
+                <Offcanvas.Header data-bs-theme="dark">
                 </Offcanvas.Header>
                 <Offcanvas.Body data-bs-theme="dark">
                     <div className="d-flex flex-column align-items-center gap-3"
