@@ -1,6 +1,7 @@
 import React, {forwardRef, useCallback} from 'react';
 import {useScanContext} from "../context/ScanContext";
 import type {ScannedPageProps} from "../types/scannedPage";
+import {store} from "../store";
 
 
 const ScannedPage = forwardRef(
@@ -17,8 +18,6 @@ const ScannedPage = forwardRef(
             fitMode,
             mainWindowHeight,
             mainWindowWidth,
-            setScale,
-            scale,
         } = useScanContext();
 
         const handleClick = () => {
@@ -47,7 +46,7 @@ const ScannedPage = forwardRef(
 
 
         const wrapperStyle: React.CSSProperties = {
-            transform: type === 'main' ? `scale(${scale / 100})` : 'none',
+            transform: type === 'main' ? `scale(${store.getState().scale / 100})` : 'none',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',

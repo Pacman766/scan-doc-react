@@ -14,6 +14,7 @@ import { IoSaveOutline, IoSettingsOutline } from 'react-icons/io5';
 import {AiOutlineColumnWidth, AiOutlineColumnHeight} from "react-icons/ai";
 import {useScanContext} from "../context/ScanContext";
 import type {NavigationProps} from "../types/navigation";
+import {store} from "../store";
 
 const Navigation = ({
                         toggleSidebar,
@@ -25,11 +26,11 @@ const Navigation = ({
                         config,
                         getScanners,
                         saveConfig,
+                        handleScaleChange,
                         incScale,
-                        decScale,
-                        handleScaleChange
+                        decScale
                     }: NavigationProps) => {
-    const {activePage, scale, fitMode} = useScanContext();
+    const {activePage, fitMode} = useScanContext();
 
     const [pageInputValue, setPageInputValue] = useState(String(activePage));
     const [showTooltip, setShowTooltip] = useState(false);
@@ -145,7 +146,7 @@ const Navigation = ({
                         <input
                             disabled={totalPages === 0}
                             type="text"
-                            value={scale + '%'}
+                            value={store.getState().scale + '%'}
                             onChange={(e) => handleScaleChange(Number(e.target.value.replace(/\D/, '')))}
                             style={{
                                 width: '45px',

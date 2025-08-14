@@ -1,17 +1,19 @@
 import {useCallback, useContext, useEffect, useState} from "react";
 import {useScanContext} from "../context/ScanContext";
+import {RootState, store} from "../store";
+import {setScale} from "../store/slices/scaleSlice";
+import {useSelector} from "react-redux";
 
 export const useChangeImgSize = () => {
     const {
         scrollContainerRef,
-        setScale,
         setFitMode,
         setMainWindowHeight,
         setMainWindowWidth,
         setZooming,
     } = useScanContext();
     const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'} as const;
-
+    const currentScale = useSelector((state: RootState) => state.scale);
     const markZooming = useCallback(() => {
         setZooming(true);
         setTimeout(() => setZooming(false), 200);
@@ -20,11 +22,11 @@ export const useChangeImgSize = () => {
     const toggleFitMode = useCallback(() => {
         setFitMode(prevMode  => {
             if (prevMode === FIT_MODE.HEIGHT) {
-                setScale(40);
+                store.dispatch(setScale(40));
                 return FIT_MODE.WIDTH;
             }
 
-            setScale(100);
+            store.dispatch(setScale(100));
             return FIT_MODE.HEIGHT;
         });
         markZooming();
@@ -32,7 +34,7 @@ export const useChangeImgSize = () => {
     }, []);
 
     const handleScaleChange = useCallback((newScale: number) => {
-        setScale(newScale);
+        store.dispatch(setScale(newScale));
         markZooming();
     }, [markZooming]);
 
@@ -53,12 +55,14 @@ export const useChangeImgSize = () => {
     }, [scrollContainerRef]);
 
     const incScale = () => {
-        setScale(prev => Math.min(400, prev + 10));
+        const newScale = Math.min(400, currentScale + 10);
+        store.dispatch(setScale(newScale));
         markZooming();
     }
 
     const decScale = () => {
-        setScale(prev => Math.max(10, prev - 10));
+        const newScale = Math.min(400, currentScale - 10);
+        store.dispatch(setScale(newScale));
         markZooming();
     }
 

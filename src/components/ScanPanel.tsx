@@ -9,6 +9,8 @@ import {useConfig} from "../hooks/useConfig";
 import {useScanFiles} from "../hooks/useScanFiles"
 import {useScanContext} from "../context/ScanContext";
 import {data} from "../utils/Files";
+import {store} from "../store";
+import {setScale} from "../store/slices/scaleSlice";
 
 const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'} as const;
 
@@ -21,7 +23,6 @@ const ScanPanel: React.FC = () => {
         rotationMap,
         setRotationMap,
         setFitMode,
-        setScale,
         mainScrollContainerRef
     } =  useScanContext();
 
@@ -45,7 +46,7 @@ const ScanPanel: React.FC = () => {
         }
 
         setFitMode(FIT_MODE.HEIGHT);
-        setScale(100);
+        store.dispatch(setScale(100));
     };
 
     const handleRotatePage = (index: number) => {

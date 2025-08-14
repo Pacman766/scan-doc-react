@@ -15,8 +15,6 @@ type ScanContextType = {
     setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
     rotationMap: RotationMap;
     setRotationMap: React.Dispatch<React.SetStateAction<RotationMap>>;
-    scale: number;
-    setScale: React.Dispatch<React.SetStateAction<number>>;
     fitMode: 'width' | 'height';
     setFitMode: React.Dispatch<React.SetStateAction<'width' | 'height'>>;
     mainWindowHeight: number;
@@ -36,7 +34,6 @@ export const ScanProvider: React.FC<{children: React.ReactNode}> = ({children}) 
     const [isZooming, setZooming] = useState<boolean>(false);
     const [files, setFiles] = useState<FileType[]>([]);
     const [rotationMap, setRotationMap] = useState<RotationMap>({});
-    const [scale, setScale] = useState<number>(100);
     const [fitMode, setFitMode] = useState<'height' | 'width'>('height');
     const [mainWindowHeight, setMainWindowHeight] = useState<number>(0);
     const [mainWindowWidth, setMainWindowWidth] = useState<number>(0);
@@ -54,8 +51,6 @@ export const ScanProvider: React.FC<{children: React.ReactNode}> = ({children}) 
                 setFiles,
                 rotationMap,
                 setRotationMap,
-                scale,
-                setScale,
                 fitMode,
                 setFitMode,
                 mainWindowHeight,

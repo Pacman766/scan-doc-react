@@ -3,8 +3,6 @@ import { ConfigActions, ConfigActionsType, ConfigState, initialState } from "../
 export const configReducer = (state = initialState, action: ConfigActionsType): ConfigState => {
     switch (action.type){
         case ConfigActions.GET_CONFIG:
-
-
             return {config: action.payload, error: null}
         case ConfigActions.GET_CONFIG_ERROR:
             return {config: null, error: action.payload}
