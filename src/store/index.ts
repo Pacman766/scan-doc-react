@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import {useDispatch, useSelector, useStore} from "react-redux";
-import {configReducer} from "./reducers/configReducer";
+import configReducer from "./slices/configSlice";
 import scaleReducer from "./slices/scaleSlice";
 
 export const store = configureStore({

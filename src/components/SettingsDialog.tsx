@@ -6,10 +6,11 @@ import {IoSettingsOutline} from "react-icons/io5";
 import type {SettingsDialogProps} from "../types/settingsDialog";
 import type {Scanner} from "../types/scanner";
 import {Config, defaultTempConfig} from "../types/config";
+import {store} from "../store";
 
 
 const SettingsDialog = (
-    {getScanners, config, saveConfig }:
+    {getScanners, saveConfig }:
         SettingsDialogProps
 ) => {
 
@@ -19,7 +20,7 @@ const SettingsDialog = (
     const resolutionOptions = [100, 200, 300, 400, 500];
     const colorOptions = ["Оттенки серого", "Цветной", "Черно-белый"];
     const [tempSelectedColor, setTempSelectedColor] = useState<string>('');
-    const colorMapping = {
+    const colorMapping  = {
         bw: 'Черно-белый',
         gray: 'Оттенки серого',
         rgb: 'Цветной'
@@ -30,15 +31,10 @@ const SettingsDialog = (
         'Цветной': 'rgb'
     };
 
-    useEffect(() => {
-        if (config){
-            setTempConfig(config);
-        }
-    }, [config]);
-
     const openSettingsWindow = async () => {
         const scannersList: Scanner[] | undefined = await getScanners();
         setScannerNames(scannersList.map(s => s.scannerName));
+        const config = store.getState().config.config;
         if (config){
             setTempConfig(config);
             setTempSelectedColor(colorMapping[config.color]);
@@ -50,8 +46,8 @@ const SettingsDialog = (
         setSettingsShow(false);
     };
 
-    const handleSave = async () => {
-        await saveConfig(tempConfig);
+    const handleSave = () => {
+        saveConfig(tempConfig);
         setSettingsShow(false);
     };
 
@@ -88,7 +84,6 @@ const SettingsDialog = (
                             }))
                         }}
                     />
-                    <hr/>
 
                     <Row className="mb-3">
                         <Col md={6}>

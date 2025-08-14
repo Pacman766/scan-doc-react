@@ -1,11 +1,11 @@
-import {useState} from 'react';
 import axios from 'axios';
 import type {Scanner} from '../types/scanner'
-import {Config, defaultTempConfig} from "../types/config";
+import {Config} from "../types/config";
+import {store} from "../store";
+import {setConfig} from "../store/slices/configSlice";
+import { setScanners } from '../store/slices/scannerSlice';
 
 export const useConfig = () => {
-    const [config, setConfig] = useState<Config>(defaultTempConfig);
-    const [scanners, setScanners] = useState<Scanner[]>([]);
 
     const getScanners = async (): Promise<Scanner[]> => {
         if (!window.IsidaImageScanning) {
@@ -15,7 +15,7 @@ export const useConfig = () => {
 
         try {
             const result = await window.IsidaImageScanning.getScannersList();
-            setScanners(result.scanners);
+            store.dispatch(setScanners(result.scanners));
             return result.scanners;
         } catch (e: any) {
             console.log(e.status?.description || e.message);
@@ -26,7 +26,7 @@ export const useConfig = () => {
     const getConfig = async () => {
         try {
             const response = await axios.get('/portal/rs/scan/config');
-            setConfig(response.data);
+            store.dispatch(setConfig(response.data));
             console.log('config', response.data);
         } catch (error) {
             console.error('Failed to fetch data:', error);
@@ -37,7 +37,7 @@ export const useConfig = () => {
         try {
             const response = await axios.put('/portal/rs/scan/config/save', newConfig);
             if (response.status === 200) {
-                setConfig(newConfig);
+                store.dispatch(setConfig(newConfig));
                 console.log('Settings saved:', newConfig);
             }
         } catch (e) {
@@ -47,10 +47,8 @@ export const useConfig = () => {
 
 
     return {
-        config,
         getScanners,
         getConfig,
-        scanners,
         saveConfig,
     };
 };

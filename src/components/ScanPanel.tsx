@@ -31,7 +31,7 @@ const ScanPanel: React.FC = () => {
 
     const {scrollToPage} = useIntersectionObserver();
     const {toggleFitMode, handleScaleChange, incScale, decScale} = useChangeImgSize();
-    const {config, getScanners, getConfig, scanners, saveConfig} = useConfig();
+    const {getScanners, getConfig, saveConfig} = useConfig();
     const {scan, handleDeletePage} = useScanFiles( setLoading, scrollToPage);
 
     const toggleSidebar = () => {
@@ -78,13 +78,10 @@ const ScanPanel: React.FC = () => {
                 handleRotatePage={handleRotatePage}
                 handleScaleChange={handleScaleChange}
                 handleFitMode={toggleFitMode}
-                scanners={scanners}
-                config={config}
                 getScanners={getScanners}
                 saveConfig={saveConfig}
                 incScale={incScale}
-                decScale={decScale}
-            />
+                decScale={decScale} scanners={[]}            />
             <Sidebar
                 showSidebar={showSidebar}
                 toggleSidebar={toggleSidebar}

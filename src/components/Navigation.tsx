@@ -23,7 +23,6 @@ const Navigation = ({
                         handleDeletePage,
                         handleRotatePage,
                         handleFitMode,
-                        config,
                         getScanners,
                         saveConfig,
                         handleScaleChange,
@@ -195,7 +194,6 @@ const Navigation = ({
                 </div>
             </Container>
             <SettingsDialog
-                config={config}
                 getScanners={getScanners}
                 saveConfig={saveConfig}
             />
