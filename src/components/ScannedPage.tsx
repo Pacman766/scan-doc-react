@@ -1,4 +1,4 @@
-import React, {forwardRef, useCallback} from 'react';
+import React, {forwardRef} from 'react';
 import {useScanContext} from "../context/ScanContext";
 import type {ScannedPageProps} from "../types/scannedPage";
 import {store} from "../store";

@@ -1,14 +1,15 @@
 import {useCallback} from "react";
 import {useScanContext} from "../context/ScanContext";
 import {Config} from "../types/config";
-import {ISFResponse, ISFFResponse, ScanError} from "../types/scanFiles"
+import {ISFResponse, ISFFResponse, ScanError, Page} from "../types/scanFiles"
+import {store, useAppSelector} from "../store";
+import {deletePage, setAllFiles, setFilesError, setFilesLoading} from "../store/slices/filesSlice";
 
 export const useScanFiles = (
-    setLoading: (value: boolean) => void,
     scrollToPage: (page: number) => void
 ) => {
-    const {files, setFiles, activePage, setActivePage} = useScanContext();
-
+    const {activePage, setActivePage} = useScanContext();
+    const files = useAppSelector(state => state.files.pages);
     const scan = (config: Config) => {
         if (!window.IsidaImageScanning) {
             console.warn('IsidaImageScanning is not available');
@@ -16,10 +17,10 @@ export const useScanFiles = (
         }
         try {
             setTimeout(() => {
-                if (files.length === 0){
+                if (files?.length === 0){
                     console.error('Возникла ошибка при сканировании документа');
                 }
-                setLoading(false);
+                store.dispatch(setFilesLoading(false));
             }, 60000);
 
             const conf = {
@@ -30,7 +31,7 @@ export const useScanFiles = (
                 }
             };
 
-            setLoading(true);
+            store.dispatch(setFilesLoading(true));
             window.IsidaImageScanning?.getImageScanningFiles({
                 scannerId: config.scannerId || 1,
                 workingDirectory : "c:\\tmp",
@@ -44,60 +45,58 @@ export const useScanFiles = (
                         .then((result: ISFFResponse) => {
                             console.log(`pages result: ${result.status.result}`);
 
-                            result.pages.forEach((page, i, pages) => {
+                            const newPages: Page[] = result.pages.map((page, i, pages) => {
                                 let number;
                                 if (files && files.length > 0 && pages[i].number === (files[i] && files[i].number)){
                                     number = files.length+1;
                                 } else {
                                     number = page.number;
                                 }
-                                setFiles(prev => [
-                                    ...prev,
-                                    {
-                                        number: number,
-                                        type: page.type,
-                                        content: page.content
-                                    }
-                                ]);
-                                setLoading(false);
-                                console.log(`files: ${files}`);
-                            })
+
+                                return {
+                                    number,
+                                    type: page.type,
+                                    content: page.content
+                                }
+                            });
+
+                            store.dispatch(setAllFiles([...(files || []), ...newPages]));
+                            store.dispatch(setFilesLoading(false));
+                            console.log(`files: ${files}`);
                         })
                         .catch((error: ScanError) => {
-                            setLoading(false);
+                            store.dispatch(setFilesLoading(false));
+                            store.dispatch(setFilesError(error.status?.result));
                             console.error(`Ошибка сканирования (getImageScanningFiles): ${error.status}`);
                         })
 
                 })
                 .catch((error: ScanError) => {
-                    setLoading(false);
+                    store.dispatch(setFilesLoading(false));
+                    store.dispatch(setFilesError(error.status?.result));
                     console.error(`Ошибка сканирования (getImageScanningFiles): ${error.status}, description: ${error.status.description}`)
                 })
 
         } catch (e : any){
-            setLoading(false);
+            store.dispatch(setFilesLoading(false));
             console.error(`(getImageScanningFiles): ${e.status}`)
         }
     }
 
     const handleDeletePage = useCallback(() => {
+        if (!files || files.length === 0) return;
         if (activePage < 1 || activePage > files.length) {
             console.warn("Cannot delete: activePage is out of bounds.");
             return;
         }
 
-        let newArr = files.filter((_, i) => {
-            return i !== activePage - 1
-        });
-        newArr.forEach((file, i) => {
-            file.number = i + 1;
-        });
-        setFiles(newArr);
+        store.dispatch(deletePage(activePage));
+        const newLength = files.length-1;
 
-        if (newArr.length === 0) {
+        if (newLength === 0) {
             setActivePage(1);
-        } else if (activePage > newArr.length) {
-            scrollToPage(newArr.length);
+        } else if (activePage > newLength) {
+            scrollToPage(newLength);
         } else {
             scrollToPage(activePage);
         }

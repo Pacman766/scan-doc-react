@@ -3,6 +3,7 @@ import { Offcanvas } from "react-bootstrap";
 import ScannedPages from "./ScannedPages";
 import {useScanContext} from "../context/ScanContext";
 import type {SidebarProps} from "../types/sidebar";
+import {useAppSelector} from "../store";
 
 
 const Sidebar = ({
@@ -11,7 +12,7 @@ const Sidebar = ({
                      scrollToPage,
                  }: SidebarProps) => {
     const sidebarItemRefs = useRef<(HTMLImageElement | null)[]>([]);
-    const {files, activePage} = useScanContext();
+    const { activePage} = useScanContext();
 
     // const setSidebarItemRef = useCallback((pageNumber, el) => {
     //     if (el) {

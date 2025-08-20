@@ -2,6 +2,7 @@ import React from 'react';
 import ScannedPage from "./ScannedPage";
 import {useScanContext} from "../context/ScanContext";
 import type {ScannedPagesProps} from "../types/scannedPages"
+import {store, useAppSelector} from "../store";
 
 const ScannedPages = ({
                           onPageClick,
@@ -9,10 +10,11 @@ const ScannedPages = ({
                           type
                       }: ScannedPagesProps) => {
     const {
-        files,
         activePage,
         imageRefs,
     } = useScanContext();
+
+    const pages = useAppSelector(state => state.files.pages);
 
     const scrollableContainerStyle: React.CSSProperties = {
         width: '100%',
@@ -35,7 +37,7 @@ const ScannedPages = ({
     return (
         <div style={scrollableContainerStyle}>
             <div style={pagesWrapperStyle}>
-                {files.map((file, index) => (
+                {pages?.map((file, index) => (
                     <ScannedPage
                         key={file.number}
                         file={file}

@@ -1,5 +1,5 @@
 import React, {createContext, ForwardedRef, useContext, useRef, useState} from "react";
-import {FileType} from "../utils/Files";
+import {Page} from "../types/scanFiles";
 
 type RotationMap = Record<number, number>;
 
@@ -11,8 +11,8 @@ type ScanContextType = {
     setActivePage: React.Dispatch<React.SetStateAction<number>>;
     isZooming: boolean;
     setZooming: React.Dispatch<React.SetStateAction<boolean>>;
-    files: FileType[];
-    setFiles: React.Dispatch<React.SetStateAction<FileType[]>>;
+    // files: Page[];
+    // setFiles: React.Dispatch<React.SetStateAction<Page[]>>;
     rotationMap: RotationMap;
     setRotationMap: React.Dispatch<React.SetStateAction<RotationMap>>;
     fitMode: 'width' | 'height';
@@ -32,7 +32,6 @@ export const ScanProvider: React.FC<{children: React.ReactNode}> = ({children}) 
 
     const [activePage, setActivePage] = useState<number>(1);
     const [isZooming, setZooming] = useState<boolean>(false);
-    const [files, setFiles] = useState<FileType[]>([]);
     const [rotationMap, setRotationMap] = useState<RotationMap>({});
     const [fitMode, setFitMode] = useState<'height' | 'width'>('height');
     const [mainWindowHeight, setMainWindowHeight] = useState<number>(0);
@@ -47,8 +46,6 @@ export const ScanProvider: React.FC<{children: React.ReactNode}> = ({children}) 
                 setActivePage,
                 isZooming,
                 setZooming,
-                files,
-                setFiles,
                 rotationMap,
                 setRotationMap,
                 fitMode,

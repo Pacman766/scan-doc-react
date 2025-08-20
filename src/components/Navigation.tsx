@@ -14,18 +14,17 @@ import { IoSaveOutline, IoSettingsOutline } from 'react-icons/io5';
 import {AiOutlineColumnWidth, AiOutlineColumnHeight} from "react-icons/ai";
 import {useScanContext} from "../context/ScanContext";
 import type {NavigationProps} from "../types/navigation";
-import {store} from "../store";
+import {store, useAppSelector} from "../store";
 
 const Navigation = ({
                         toggleSidebar,
                         onScan,
-                        totalPages,
                         handleDeletePage,
                         handleRotatePage,
+                        handleScaleChange,
                         handleFitMode,
                         getScanners,
                         saveConfig,
-                        handleScaleChange,
                         incScale,
                         decScale
                     }: NavigationProps) => {
@@ -46,7 +45,9 @@ const Navigation = ({
             setShowTooltip(false);
         }
     };
-
+    const pages = useAppSelector(state => state.files.pages);
+    let totalPages = pages ? pages.length : 0;
+    const scale = useAppSelector(state => state.scale);
     // const handlePageInputBlur = () => {
     //     let pageNum = parseInt(pageInputValue, 10);
     //     if (isNaN(pageNum) || pageNum < 1) {
@@ -62,10 +63,10 @@ const Navigation = ({
     //     setShowTooltip(false);
     // };
 
-    const handlePageInputFocus = () => {
-        if (totalPages === 0) return;
-        setShowTooltip(true);
-    };
+    // const handlePageInputFocus = () => {
+    //     if (totalPages === 0) return;
+    //     setShowTooltip(true);
+    // };
 
     const renderPageTooltip = (props: object) => (
         <Tooltip id="page-input-tooltip" {...props}>
@@ -113,7 +114,7 @@ const Navigation = ({
                                 value={pageInputValue}
                                 onChange={handlePageInputChange}
                                 // onBlur={handlePageInputBlur}
-                                onFocus={handlePageInputFocus}
+                                // onFocus={handlePageInputFocus}
                                 style={{
                                     width: '35px',
                                     height: '30px',
@@ -145,7 +146,7 @@ const Navigation = ({
                         <input
                             disabled={totalPages === 0}
                             type="text"
-                            value={store.getState().scale + '%'}
+                            value={scale + '%'}
                             onChange={(e) => handleScaleChange(Number(e.target.value.replace(/\D/, '')))}
                             style={{
                                 width: '45px',

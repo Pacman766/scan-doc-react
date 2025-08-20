@@ -11,6 +11,7 @@ import {useScanContext} from "../context/ScanContext";
 import {data} from "../utils/Files";
 import {store} from "../store";
 import {setScale} from "../store/slices/scaleSlice";
+import { setAllFiles } from '../store/slices/filesSlice';
 
 const FIT_MODE = {WIDTH: 'width', HEIGHT: 'height'} as const;
 
@@ -18,8 +19,6 @@ const ScanPanel: React.FC = () => {
     const {
         activePage,
         setActivePage,
-        files,
-        setFiles,
         rotationMap,
         setRotationMap,
         setFitMode,
@@ -32,14 +31,16 @@ const ScanPanel: React.FC = () => {
     const {scrollToPage} = useIntersectionObserver();
     const {toggleFitMode, handleScaleChange, incScale, decScale} = useChangeImgSize();
     const {getScanners, getConfig, saveConfig} = useConfig();
-    const {scan, handleDeletePage} = useScanFiles( setLoading, scrollToPage);
+    const {scan, handleDeletePage} = useScanFiles(scrollToPage);
 
     const toggleSidebar = () => {
         setShowSidebar(!showSidebar);
     };
 
     const handleScan = () => {
-        setFiles(data);
+        store.dispatch(setAllFiles(data));
+        console.log('files data: ', data)
+        // setFiles(data);
         setActivePage(1);
         if (mainScrollContainerRef.current) {
             mainScrollContainerRef.current.scrollTo({top: 0, behavior: 'smooth'});
@@ -56,11 +57,11 @@ const ScanPanel: React.FC = () => {
             ...prev,
             [index]: newDegree
         }));
-        setFiles(prevFiles =>
-            prevFiles.map((file, i) =>
-                i === index ? {...file, degree: newDegree} : file
-            )
-        );
+        // setFiles(prevFiles =>
+        //     prevFiles.map((file, i) =>
+        //         i === index ? {...file, degree: newDegree} : file
+        //     )
+        // );
     };
 
     useEffect(() => {
@@ -72,8 +73,6 @@ const ScanPanel: React.FC = () => {
             <Navigation
                 toggleSidebar={toggleSidebar}
                 onScan={handleScan}
-                totalPages={files?.length}
-                scrollToPage={scrollToPage}
                 handleDeletePage={handleDeletePage}
                 handleRotatePage={handleRotatePage}
                 handleScaleChange={handleScaleChange}
@@ -81,7 +80,7 @@ const ScanPanel: React.FC = () => {
                 getScanners={getScanners}
                 saveConfig={saveConfig}
                 incScale={incScale}
-                decScale={decScale} scanners={[]}            />
+                decScale={decScale} scanners={[]}/>
             <Sidebar
                 showSidebar={showSidebar}
                 toggleSidebar={toggleSidebar}
