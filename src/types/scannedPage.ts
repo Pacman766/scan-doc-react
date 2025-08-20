@@ -1,7 +1,7 @@
-import {FileType} from "../utils/Files";
+import {Page} from "../types/scanFiles";
 
 export type ScannedPageProps = {
-    file: FileType;
+    file: Page;
     index: number;
     onClick: (filenNumber: number) => void;
     highlight: boolean;

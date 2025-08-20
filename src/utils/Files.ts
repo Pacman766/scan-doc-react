@@ -1,11 +1,7 @@
-export type FileType = {
-    number: number;
-    type: string;
-    content: string;
-    degree?: number;
-};
+import {Page} from "../types/scanFiles";
 
-export const data : FileType[] = [
+
+export const data : Page[] = [
     {number: 1, type: 'jpg', content: 'jpg/api_page-0001.jpg'},
     {number: 2, type: 'jpg', content: 'jpg/api_page-0002.jpg'},
     {number: 3, type: 'jpg', content: 'jpg/api_page-0003.jpg'},

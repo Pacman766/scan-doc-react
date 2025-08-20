@@ -4,8 +4,8 @@ import {Scanner} from "./scanner";
 export type NavigationProps = {
     toggleSidebar: () => void;
     onScan: () => void;
-    totalPages: number;
-    scrollToPage: (page: number) => void;
+    // totalPages: number;
+    // scrollToPage: (page: number) => void;
     handleDeletePage: () => void;
     handleRotatePage: (index: number) => void;
     handleFitMode: () => void;

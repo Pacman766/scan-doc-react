@@ -4,10 +4,23 @@ export type File = {
 }
 
 export type Page = {
-    description: string,
     number: number,
+    type: string,
     content: string,
-    type: string
+    description?: string,
+    degree?: number | null;
+}
+
+export const initialState: PageState = {
+    pages: [],
+    error: null,
+    loading: false
+};
+
+export type PageState = {
+    pages: Page[] | null,
+    error: null | string,
+    loading: boolean
 }
 
 export type ISFResponse = {
@@ -30,7 +43,7 @@ export type ISFFResponse = {
 
 export type ScanError = {
     status: {
-        result?: string;
-        description?: string;
+        result: string | null;
+        description?: string | null;
     };
 }
