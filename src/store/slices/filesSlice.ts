@@ -7,8 +7,7 @@ const filesSlice = createSlice({
     reducers: {
         setFiles: (state, action: PayloadAction<Page>) => {
             if (state.pages){
-                state.pages = [...(state.pages ?? []), action.payload];
-                state.error = null;
+                state.pages.push(action.payload)
             } else {
                 state.pages = [action.payload];
             }
@@ -34,7 +33,8 @@ const filesSlice = createSlice({
                     number: i+1,
                 }));
         }
-}});
+    }
+});
 
 export const {setFiles, setAllFiles, setFilesError, setFilesLoading, deletePage } = filesSlice.actions;
 export default filesSlice.reducer;

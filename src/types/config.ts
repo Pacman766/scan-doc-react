@@ -1,10 +1,10 @@
 export type Config = {
     scannerId: number;
-    workingDirectory: string;
-    dpi?: number | string;
+    workingDirectory?: string;
+    dpi: number;
     color: 'bw' | 'gray' | 'rgb';
-    feeder?: boolean;
-    duplex?: boolean;
+    feeder: boolean;
+    duplex: boolean;
     format?: {
         type?: string;
         quality?: number;
@@ -13,7 +13,7 @@ export type Config = {
 
 export const defaultTempConfig : Config = {
     scannerId: 1,
-    workingDirectory : "c:\\tmp",
+    workingDirectory: "c:\\tmp",
     dpi: 100,
     color: 'bw',
     feeder: false,

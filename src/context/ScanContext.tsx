@@ -11,8 +11,6 @@ type ScanContextType = {
     setActivePage: React.Dispatch<React.SetStateAction<number>>;
     isZooming: boolean;
     setZooming: React.Dispatch<React.SetStateAction<boolean>>;
-    // files: Page[];
-    // setFiles: React.Dispatch<React.SetStateAction<Page[]>>;
     rotationMap: RotationMap;
     setRotationMap: React.Dispatch<React.SetStateAction<RotationMap>>;
     fitMode: 'width' | 'height';

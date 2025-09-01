@@ -1,12 +1,12 @@
 import axios from 'axios';
 import type {Scanner} from '../types/scanner'
 import {Config} from "../types/config";
-import {store} from "../store";
-import {setConfig} from "../store/slices/configSlice";
+import {useAppStore} from "../store";
 import { setScanners } from '../store/slices/scannerSlice';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 
 export const useConfig = () => {
-
+    const store = useAppStore();
     const getScanners = async (): Promise<Scanner[]> => {
         if (!window.IsidaImageScanning) {
             console.warn('IsidaImageScanning is not available');
@@ -24,31 +24,45 @@ export const useConfig = () => {
     }
 
     const getConfig = async () => {
-        try {
-            const response = await axios.get('/portal/rs/scan/config');
-            store.dispatch(setConfig(response.data));
-            console.log('config', response.data);
-        } catch (error) {
-            console.error('Failed to fetch data:', error);
-        }
+        const response = await axios.get('/portal/rs/scan/config');
+        console.log('config', response.data);
+        return response.data;
+    }
+
+
+    const useQueryConfig = () => {
+        return useQuery({
+            queryKey: ['config'],
+            queryFn: getConfig,
+        });
     }
 
     const saveConfig = async (newConfig: Config) => {
-        try {
-            const response = await axios.put('/portal/rs/scan/config/save', newConfig);
-            if (response.status === 200) {
-                store.dispatch(setConfig(newConfig));
-                console.log('Settings saved:', newConfig);
+        const response = await axios.put('/portal/rs/scan/config/save', newConfig);
+
+        return response.data;
+    }
+
+    const useSaveConfig = () => {
+        const  queryClient = useQueryClient();
+
+        return useMutation({
+            mutationFn: saveConfig,
+            onSuccess: (data) => {
+                queryClient.setQueryData(['config'], data);
+                console.log("✅ Settings saved:", data);
+            },
+            onError: (error) => {
+                console.error("❌ Failed to save config:", error);
             }
-        } catch (e) {
-            console.log('Failed to fetch data: ', e);
-        }
+        })
     }
 
 
     return {
         getScanners,
-        getConfig,
         saveConfig,
+        useQueryConfig,
+        useSaveConfig
     };
 };

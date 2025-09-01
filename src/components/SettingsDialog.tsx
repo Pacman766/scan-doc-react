@@ -6,11 +6,11 @@ import {IoSettingsOutline} from "react-icons/io5";
 import type {SettingsDialogProps} from "../types/settingsDialog";
 import type {Scanner} from "../types/scanner";
 import {Config, defaultTempConfig} from "../types/config";
-import {store} from "../store";
+import { useConfig } from '../hooks/useConfig';
 
 
 const SettingsDialog = (
-    {getScanners, saveConfig }:
+    {getScanners }:
         SettingsDialogProps
 ) => {
 
@@ -30,14 +30,16 @@ const SettingsDialog = (
         'Оттенки серого': 'gray',
         'Цветной': 'rgb'
     };
+    const {useQueryConfig, useSaveConfig } = useConfig();
+    const {data: config, isLoading, isError} = useQueryConfig();
+    const { mutate: saveConfig, isPending } = useSaveConfig();
 
     const openSettingsWindow = async () => {
         const scannersList: Scanner[] | undefined = await getScanners();
         setScannerNames(scannersList.map(s => s.scannerName));
-        const config = store.getState().config.config;
         if (config){
             setTempConfig(config);
-            setTempSelectedColor(colorMapping[config.color]);
+            setTempSelectedColor(colorMapping[config.color as keyof typeof colorMapping]);
         }
         setSettingsShow(true);
     };
@@ -47,8 +49,14 @@ const SettingsDialog = (
     };
 
     const handleSave = () => {
-        saveConfig(tempConfig);
-        setSettingsShow(false);
+        setTempConfig((prev) => {
+            const {workingDirectory, format, ...rest} = prev;
+
+            saveConfig(rest);
+            setSettingsShow(false);
+
+            return rest;
+        });
     };
 
     return (
@@ -73,6 +81,92 @@ const SettingsDialog = (
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {
+                        isLoading ? (
+                            <div className="d-flex justify-content-center align-items-center" style={{height: 200}}>
+                                <div className="spinner-border" role="status">
+                                    <span className="visually-hidden">Загрузка...</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <SettingsDropdown
+                                    title="Сканер*"
+                                    data={scannerNames}
+                                    selected={scannerNames[0]}
+                                    onSelect={(value) => {
+                                        setTempConfig((prev) => ({
+                                            ...prev,
+                                            scannerName: value
+                                        }))
+                                    }}
+                                />
+
+                                <Row className="mb-3">
+                                    <Col md={6}>
+                                        <SettingsDropdown
+                                            title="Разрешение"
+                                            data={resolutionOptions}
+                                            selected={tempConfig?.dpi}
+                                            onSelect={(value) => setTempConfig(prev => ({
+                                                ...prev,
+                                                dpi: +value
+                                            }))}
+                                        />
+                                    </Col>
+                                    <Col md={6}>
+                                        <SettingsDropdown
+                                            title="Цветовой формат"
+                                            data={colorOptions}
+                                            selected={tempSelectedColor}
+                                            onSelect={(value) => {
+                                                setTempSelectedColor(value);
+                                                setTempConfig((prev) => ({
+                                                    ...prev,
+                                                    color: reverseColorMapping[value]
+                                                }));
+                                            }}
+                                        />
+                                    </Col>
+                                </Row>
+
+                                <Row>
+                                    <Col md={6}>
+                                        <Form.Check
+                                            id="feeder-checkbox"
+                                            type="checkbox"
+                                            label="Поточное сканирование"
+                                            checked={tempConfig.feeder}
+                                            onChange={() =>
+                                                setTempConfig((prev) => ({
+                                                    ...prev,
+                                                    feeder: !prev.feeder
+                                                }))
+                                            }
+                                        />
+                                    </Col>
+                                    <Col md={6}>
+                                        <Form.Check
+                                            id="duplex-checkbox"
+                                            type="checkbox"
+                                            label="Двустороннее"
+                                            checked={tempConfig.duplex}
+                                            disabled={!tempConfig.feeder}
+                                            onChange={() =>
+                                                setTempConfig((prev) => ({
+                                                    ...prev,
+                                                    duplex: !prev.duplex
+                                                }))
+                                            }
+                                        />
+                                    </Col>
+                                </Row>
+
+                                <small className="text-muted d-block mt-3">* обязательные для заполнения поля</small>
+                            </>
+                        )
+
+                    }
                     <SettingsDropdown
                         title="Сканер*"
                         data={scannerNames}
@@ -93,7 +187,7 @@ const SettingsDialog = (
                                 selected={tempConfig?.dpi}
                                 onSelect={(value) => setTempConfig(prev => ({
                                     ...prev,
-                                    dpi: value
+                                    dpi: +value
                                 }))}
                             />
                         </Col>

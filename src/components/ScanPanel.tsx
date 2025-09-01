@@ -9,7 +9,7 @@ import {useConfig} from "../hooks/useConfig";
 import {useScanFiles} from "../hooks/useScanFiles"
 import {useScanContext} from "../context/ScanContext";
 import {data} from "../utils/Files";
-import {store} from "../store";
+import {store, useAppStore} from "../store";
 import {setScale} from "../store/slices/scaleSlice";
 import { setAllFiles } from '../store/slices/filesSlice';
 
@@ -30,7 +30,7 @@ const ScanPanel: React.FC = () => {
 
     const {scrollToPage} = useIntersectionObserver();
     const {toggleFitMode, handleScaleChange, incScale, decScale} = useChangeImgSize();
-    const {getScanners, getConfig, saveConfig} = useConfig();
+    const {getScanners, saveConfig} = useConfig();
     const {scan, handleDeletePage} = useScanFiles(scrollToPage);
 
     const toggleSidebar = () => {
@@ -63,10 +63,6 @@ const ScanPanel: React.FC = () => {
         //     )
         // );
     };
-
-    useEffect(() => {
-        getConfig();
-    }, []);
 
     return (
         <div className="dark-mode">
