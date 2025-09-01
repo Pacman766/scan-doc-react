@@ -4,14 +4,18 @@ import configReducer from "./slices/configSlice";
 import scaleReducer from "./slices/scaleSlice";
 import scannerReducer from "./slices/scannerSlice";
 import filesReducer from "./slices/filesSlice";
+import {configApi} from "./api/configApi";
 
 export const store = configureStore({
     reducer: {
         config: configReducer,
         scale: scaleReducer,
         scanner: scannerReducer,
-        files: filesReducer
-    }
+        files: filesReducer,
+        [configApi.reducerPath]: configApi.reducer
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(configApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>

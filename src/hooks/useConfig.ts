@@ -3,7 +3,6 @@ import type {Scanner} from '../types/scanner'
 import {Config} from "../types/config";
 import {useAppStore} from "../store";
 import { setScanners } from '../store/slices/scannerSlice';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 
 export const useConfig = () => {
     const store = useAppStore();
@@ -29,40 +28,14 @@ export const useConfig = () => {
         return response.data;
     }
 
-
-    const useQueryConfig = () => {
-        return useQuery({
-            queryKey: ['config'],
-            queryFn: getConfig,
-        });
-    }
-
     const saveConfig = async (newConfig: Config) => {
         const response = await axios.put('/portal/rs/scan/config/save', newConfig);
 
         return response.data;
     }
 
-    const useSaveConfig = () => {
-        const  queryClient = useQueryClient();
-
-        return useMutation({
-            mutationFn: saveConfig,
-            onSuccess: (data) => {
-                queryClient.setQueryData(['config'], data);
-                console.log("✅ Settings saved:", data);
-            },
-            onError: (error) => {
-                console.error("❌ Failed to save config:", error);
-            }
-        })
-    }
-
-
     return {
         getScanners,
-        saveConfig,
-        useQueryConfig,
-        useSaveConfig
+        saveConfig
     };
 };
