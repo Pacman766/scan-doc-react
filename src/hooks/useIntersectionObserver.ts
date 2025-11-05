@@ -23,7 +23,9 @@ export const useIntersectionObserver = () => {
             .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
 
         const topMostTarget = visible[0].target;
-        const index = imageRefs.current.findIndex(ref => ref === topMostTarget);
+        const refs = imageRefs.current;
+        if (!refs) return;
+        const index = refs.findIndex(ref => ref === topMostTarget);
 
         if (index !== -1){
             const newPage = index + 1;
@@ -35,7 +37,8 @@ export const useIntersectionObserver = () => {
     }, [isZooming, imageRefs, activePage]);
 
     useEffect(() => {
-        if (!imageRefs?.current.length || !scrollContainerRef?.current) {
+        const refs = imageRefs?.current;
+        if (!refs?.length || !scrollContainerRef?.current) {
             return;
         }
 
@@ -45,9 +48,11 @@ export const useIntersectionObserver = () => {
         });
 
 
-        imageRefs.current.forEach(el => {
-            el && observerRef.current?.observe(el);
-        });
+        if (refs) {
+            refs.forEach(el => {
+                el && observerRef.current?.observe(el);
+            });
+        }
 
         return () => {
             observerRef.current?.disconnect();
@@ -55,7 +60,9 @@ export const useIntersectionObserver = () => {
     }, [scrollContainerRef, imageRefs, files]);
 
     const scrollToPage = useCallback((page: number) => {
-        const mainEl = imageRefs.current[page-1];
+        const refs = imageRefs.current;
+        if (!refs) return;
+        const mainEl = refs[page-1];
         if (mainEl instanceof HTMLImageElement) {
             isPageSelectionScroll.current = true;
             mainEl.scrollIntoView({ block: 'center' });

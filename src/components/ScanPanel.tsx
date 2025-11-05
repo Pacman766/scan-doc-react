@@ -85,7 +85,7 @@ const ScanPanel: React.FC = () => {
             <MainWindow
                 scrollToPage={scrollToPage}
                 showSidebar={showSidebar}
-                ref={mainScrollContainerRef}
+                ref={mainScrollContainerRef as React.RefObject<HTMLDivElement>}
             />
         </div>
     );
