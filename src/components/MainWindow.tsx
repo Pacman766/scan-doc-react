@@ -18,13 +18,13 @@ const MainWindow = React.forwardRef<HTMLDivElement, MainWindowProps>(({
     const isInternalScrollRef = useRef<boolean>(false);
 
     // Отключаем скролл body, чтобы не было двойного вертикального скролла
-    useEffect(() => {
-        const previousOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = previousOverflow;
-        };
-    }, []);
+    // useEffect(() => {
+    //     const previousOverflow = document.body.style.overflow;
+    //     document.body.style.overflow = 'hidden';
+    //     return () => {
+    //         document.body.style.overflow = previousOverflow;
+    //     };
+    // }, []);
 
     // Обработчик скролла для синхронизации с Sidebar
     useEffect(() => {
@@ -130,7 +130,7 @@ const MainWindow = React.forwardRef<HTMLDivElement, MainWindowProps>(({
             ref={mainScrollContainerRef}
             style={{
                 flexGrow: 1,
-                overflowY: 'scroll',
+                overflowY: 'auto',
                 height: '100vh',
                 scrollBehavior: 'smooth',
                 scrollSnapType: 'y proximity',
@@ -140,7 +140,7 @@ const MainWindow = React.forwardRef<HTMLDivElement, MainWindowProps>(({
                 paddingTop: '60px',
                 paddingBottom: '20px',
                 transform: showSidebar ? 'translateX(125px)' : 'translateX(0px)',
-                transition: 'transform 0.3s ease-in-out'
+                width: showSidebar ? 'calc(100% - 125px)' : '100%' // Подсчет ширины, чтобы не пропадал скролл
             }}
             className="main-window-scroll-container"
         >
