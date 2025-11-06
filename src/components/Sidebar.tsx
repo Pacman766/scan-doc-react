@@ -12,7 +12,7 @@ const Sidebar = ({
                      scrollToPage,
                  }: SidebarProps) => {
     const sidebarContainerRef = useRef<HTMLDivElement | null>(null);
-    const { activePage } = useScanContext();
+    const { activePage, setActivePage } = useScanContext();
     const isInternalScrollRef = useRef<boolean>(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -157,6 +157,8 @@ const Sidebar = ({
                     >
                         <ScannedPages
                             onPageClick={(page) => {
+                                // Сразу обновляем activePage для немедленного выделения
+                                setActivePage(page);
                                 // Сообщаем о клике (для совместимости с хуком)
                                 scrollToPage(page);
                                 // Явно отправляем событие SIDEBAR, чтобы MainWindow отскроллил
