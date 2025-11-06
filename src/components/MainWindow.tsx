@@ -137,7 +137,7 @@ const MainWindow = React.forwardRef<HTMLDivElement, MainWindowProps>(({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                paddingTop: '60px',
+                paddingTop: '20px',
                 paddingBottom: '20px',
                 transform: showSidebar ? 'translateX(125px)' : 'translateX(0px)',
                 width: showSidebar ? 'calc(100% - 125px)' : '100%' // Подсчет ширины, чтобы не пропадал скролл
